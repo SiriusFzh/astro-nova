@@ -1,8 +1,14 @@
-# AstroNova 🔭
+<p align="center">
+  <img src="icon.png" alt="AstroNova" width="128">
+</p>
 
-**AI 驱动的天文学全领域科研助手桌面客户端**
+<h1 align="center">AstroNova</h1>
 
-从文献检索到论文发表，覆盖天文学科研全流程的一站式 AI 工具集。
+<p align="center">
+  <strong>AI 驱动的天文学全领域科研助手桌面客户端</strong>
+  <br>
+  从文献检索到论文发表，覆盖天文学科研全流程的一站式 AI 工具集。
+</p>
 
 ---
 
@@ -83,15 +89,24 @@
 
 ## 支持的大模型
 
-可同时配置多个 Provider，系统根据任务类型自动路由到最适合的模型：
+支持同时配置多个 Provider，每个 Provider 可**自行指定**负责的任务类型（对话/搜索/写作/制图/全部），系统按配置路由：
 
-| 服务商 | 推荐模型 | 适用场景 |
-|--------|---------|---------|
-| **OpenAI** | GPT-4o、GPT-4o-mini | 文献搜索、论文精读、通用对话 |
-| **Anthropic Claude** | Sonnet、Haiku | 笔记生成、论文写作、长文本分析 |
-| **DeepSeek** | V3、R1 | 代码生成(制图/分析)、数学推理 |
-| **Ollama** | 本地开源模型 | 简单问答、摘要、离线使用 |
+| 服务商 | 推荐模型 | 说明 |
+|--------|---------|------|
+| **OpenAI** | GPT-4o、GPT-4o-mini | 标准兼容接口 |
+| **Anthropic Claude** | Sonnet 4、Haiku 4 | 直连 Anthropic API |
+| **DeepSeek** | V4、R1 | OpenAI 兼容接口 |
+| **Ollama** | 本地开源模型 | 离线本地运行 |
 | **兼容 API** | SiliconFlow、vLLM 等 | 任意 OpenAI 兼容接口 |
+
+**配置示例：**
+```
+Provider A: GPT-4o   → 负责 文献搜索 + 论文精读
+Provider B: Sonnet   → 负责 笔记生成 + 论文写作
+Provider C: DeepSeek → 负责 制图代码生成 + 数据分析
+Provider D: Ollama   → 负责 本地简单问答
+```
+在 设置 → 模型配置 中添加和分配任务。
 
 ---
 
@@ -122,11 +137,12 @@
 
 ### 方式一：下载安装包（推荐）
 
-从 [GitHub Releases](https://github.com/SiriusFzh/astro-nova/releases) 下载 `AstroNova-Setup-1.0.0.exe`
+从 [GitHub Releases](https://github.com/SiriusFzh/astro-nova/releases) 下载对应系统的安装包：
 
-- 双击安装，按提示完成
-- 桌面上会出现 AstroNova 快捷方式
-- **无需安装 Python**（内置独立后端）
+- **Windows**: `AstroNova-Setup-1.0.0.exe` — 双击安装，桌面上会出现快捷方式
+- **macOS (Intel / Apple Silicon)**: `AstroNova-1.0.0-mac.dmg` — 打开 DMG 将 AstroNova 拖入 Applications
+
+**无需安装 Python**（内置独立后端）
 
 ### 方式二：从源码运行
 
@@ -146,6 +162,8 @@ npm install
 npm run dev
 ```
 
+支持 **Windows 10/11** 和 **macOS 13+** 两种开发环境。
+
 ---
 
 ## 技术栈
@@ -156,7 +174,7 @@ npm run dev
 | **数据库** | SQLite + SQLAlchemy (async) |
 | **LLM 接入** | OpenAI SDK + Anthropic SDK + 统一 Provider 抽象层 |
 | **前端** | Vue 3 (Composition API) + Element Plus + Vite |
-| **桌面** | Electron 42 + electron-builder + NSIS |
+| **桌面** | Electron 42 + electron-builder (NSIS + DMG) |
 | **知识库** | BM25 全文检索 (自研) |
 | **打包** | PyInstaller (后端独立 EXE) |
 

@@ -28,9 +28,14 @@ function getTrayIcon() {
 
 // ── Python 后端 ──────────────────────────────────────────────────────
 function getPythonPath() {
-  // 生产环境: 使用 PyInstaller 打包的独立 EXE
-  const bundled = path.join(process.resourcesPath, "backend", "astro_nova_backend.exe");
-  if (fs.existsSync(bundled)) return { exe: bundled, useModule: false };
+  // 生产环境: 使用 PyInstaller 打包的独立后端
+  if (process.platform === "win32") {
+    const exe = path.join(process.resourcesPath, "backend", "astro_nova_backend.exe");
+    if (fs.existsSync(exe)) return { exe, useModule: false };
+  } else if (process.platform === "darwin") {
+    const bin = path.join(process.resourcesPath, "backend", "astro_nova_backend");
+    if (fs.existsSync(bin)) return { exe: bin, useModule: false };
+  }
   // 开发环境: 使用系统 Python
   const python = process.platform === "win32" ? "python" : "python3";
   return { exe: python, useModule: true };
@@ -81,7 +86,19 @@ function waitForBackend(retries = 30) {
 }
 
 // ── 主窗口 ─────────────────────────────────────────────────────────────
+function getFrontendURL() {
+  // 开发模式 → Vite dev server
+  if (!app.isPackaged) {
+    return "http://localhost:5173";
+  }
+  // 生产模式 → 打包的前端文件
+  return `file://${path.join(__dirname, "..", "frontend", "dist", "index.html")}`;
+}
+
 function createWindow() {
+  const url = getFrontendURL();
+  console.log(`[main] 加载前端: ${url}`);
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -89,7 +106,7 @@ function createWindow() {
     minHeight: 600,
     title: "AstroNova",
     icon: getIconPath(),
-    show: false,                          // 等后端就绪后再显示
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -97,19 +114,19 @@ function createWindow() {
     },
   });
 
-  // 关闭 → 隐藏到托盘（不退出）
+  mainWindow.loadURL(url);
+
+  // 关闭 → 隐藏到托盘（仅 Windows，macOS 无系统托盘概念）
   mainWindow.on("close", (e) => {
-    if (app.isQuitting) return;           // 真正退出时放行
-    if (tray) {
+    if (app.isQuitting) return;
+    if (tray && process.platform !== "darwin") {
       e.preventDefault();
       mainWindow.hide();
-      // 可选: 显示通知
       if (Notification.isSupported()) {
         const notif = new Notification({ title: "AstroNova", body: "已最小化到系统托盘" });
         notif.show();
       }
     }
-    // 没有托盘时直接退出
   });
 
   mainWindow.on("ready-to-show", () => mainWindow.show());
@@ -204,16 +221,17 @@ app.whenReady().then(async () => {
     return;
   }
 
-  createTray();
+  // macOS 无系统托盘，Windows 创建托盘以便最小化到后台
+  if (process.platform !== "darwin") createTray();
   createWindow();
 });
 
-// 所有窗口关闭 → 不退出（有托盘时由 close 事件接管）
-app.on("window-all-closed", (e) => {
-  if (tray) {
-    // 有托盘时保留进程
-  } else {
-    if (process.platform !== "darwin") app.quit();
+// 所有窗口关闭 → Windows 有托盘保活，macOS 标准行为是退出
+app.on("window-all-closed", () => {
+  if (process.platform === "darwin") {
+    // macOS: 不退出，cmd+W 只是关窗口
+  } else if (!tray) {
+    app.quit();
   }
 });
 

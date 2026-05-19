@@ -10,7 +10,7 @@
     "electron:dev": "electron .",
     "dev": "concurrently \"npm run frontend:dev\" \"npm run electron:dev\"",
     "build": "npm run frontend:build && npm run backend:build && electron-builder",
-    "backend:build": "pyinstaller build/pyinstaller.spec --noconfirm 2>&1 | tail -1 && rm -rf build/backend && cp -r dist/astro_nova_backend build/backend",
+    "backend:build": "bash scripts/build_backend.sh",
     "postinstall": "cd frontend && npm install"
   },
   "devDependencies": {
@@ -46,6 +46,18 @@
       "target": "nsis",
       "icon": "build/icon.png",
       "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "icon": "build/icon.icns",
+      "artifactName": "${productName}-${version}-mac.${ext}",
+      "category": "public.app-category.education",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "title": "AstroNova ${version}",
+      "icon": "build/icon.icns"
     },
     "nsis": {
       "oneClick": false,
