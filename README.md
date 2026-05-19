@@ -89,15 +89,24 @@
 
 ## 支持的大模型
 
-可同时配置多个 Provider，系统根据任务类型自动路由到最适合的模型：
+支持同时配置多个 Provider，每个 Provider 可**自行指定**负责的任务类型（对话/搜索/写作/制图/全部），系统按配置路由：
 
-| 服务商 | 推荐模型 | 适用场景 |
-|--------|---------|---------|
-| **OpenAI** | GPT-4o、GPT-4o-mini | 文献搜索、论文精读、通用对话 |
-| **Anthropic Claude** | Sonnet、Haiku | 笔记生成、论文写作、长文本分析 |
-| **DeepSeek** | V3、R1 | 代码生成(制图/分析)、数学推理 |
-| **Ollama** | 本地开源模型 | 简单问答、摘要、离线使用 |
+| 服务商 | 推荐模型 | 说明 |
+|--------|---------|------|
+| **OpenAI** | GPT-4o、GPT-4o-mini | 标准兼容接口 |
+| **Anthropic Claude** | Sonnet 4、Haiku 4 | 直连 Anthropic API |
+| **DeepSeek** | V4、R1 | OpenAI 兼容接口 |
+| **Ollama** | 本地开源模型 | 离线本地运行 |
 | **兼容 API** | SiliconFlow、vLLM 等 | 任意 OpenAI 兼容接口 |
+
+**配置示例：**
+```
+Provider A: GPT-4o   → 负责 文献搜索 + 论文精读
+Provider B: Sonnet   → 负责 笔记生成 + 论文写作
+Provider C: DeepSeek → 负责 制图代码生成 + 数据分析
+Provider D: Ollama   → 负责 本地简单问答
+```
+在 设置 → 模型配置 中添加和分配任务。
 
 ---
 
