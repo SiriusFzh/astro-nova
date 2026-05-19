@@ -1,0 +1,27 @@
+# astro-nova / skills / astro-digest / references / digest-config.yaml
+# 文献 Digest 配置模板
+
+# ── 研究方向 (自然语言描述) ──
+research_interest: >
+  高能天体物理，主要关注中子星并合、伽马射线暴、引力波电磁对应体。
+  也关注黑洞吸积与喷流、暂现源巡天。
+
+# ── ArXiv 分类 ──
+categories:
+  - astro-ph.HE
+  - astro-ph.GA
+  - gr-qc
+
+# ── 频率 ──
+frequency: daily  # daily | weekly
+
+# ── 每次最大论文数 ──
+max_papers: 30
+
+# ── 过滤: 最低相关度 (1-10) ──
+relevance_threshold: 5
+
+# ── 输出 ──
+output:
+  format: markdown  # markdown | tex
+  path: ./digest/

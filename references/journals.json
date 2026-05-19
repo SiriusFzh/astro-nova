@@ -1,0 +1,81 @@
+{
+  "_comment": "astro-nova / references / journals.json — 天文学期刊元数据",
+
+  "apj": {
+    "full_name": "The Astrophysical Journal",
+    "abbreviation": "ApJ",
+    "publisher": "IOP Publishing for AAS",
+    "document_class": "aastex701",
+    "class_options": ["aapm", "twocolumn"],
+    "bibstyle": "aasjournal",
+    "ref_format": "author-year",
+    "abstract_limit": 250,
+    "keywords_limit": 6
+  },
+  "aj": {
+    "full_name": "The Astronomical Journal",
+    "abbreviation": "AJ",
+    "publisher": "IOP Publishing for AAS",
+    "document_class": "aastex701",
+    "class_options": ["aj", "twocolumn"],
+    "bibstyle": "aasjournal",
+    "ref_format": "author-year",
+    "abstract_limit": 250,
+    "keywords_limit": 6
+  },
+  "apjl": {
+    "full_name": "The Astrophysical Journal Letters",
+    "abbreviation": "ApJL",
+    "publisher": "IOP Publishing for AAS",
+    "document_class": "aastex701",
+    "class_options": ["apjl", "twocolumn"],
+    "bibstyle": "aasjournal",
+    "ref_format": "author-year",
+    "abstract_limit": 250,
+    "keywords_limit": 5
+  },
+  "mnras": {
+    "full_name": "Monthly Notices of the Royal Astronomical Society",
+    "abbreviation": "MNRAS",
+    "publisher": "Oxford University Press",
+    "document_class": "mnras",
+    "class_options": ["useAMS", "usenatbib"],
+    "bibstyle": "mnras",
+    "ref_format": "author-year",
+    "abstract_limit": 300,
+    "keywords_limit": 6
+  },
+  "aa": {
+    "full_name": "Astronomy & Astrophysics",
+    "abbreviation": "A&A",
+    "publisher": "EDP Sciences",
+    "document_class": "aa",
+    "class_options": ["twocolumn"],
+    "bibstyle": "aa",
+    "ref_format": "author-year",
+    "abstract_limit": 300,
+    "keywords_limit": 6
+  },
+  "natastron": {
+    "full_name": "Nature Astronomy",
+    "abbreviation": "Nat. Astron.",
+    "publisher": "Nature Publishing Group",
+    "document_class": "sn-jnl",
+    "class_options": [],
+    "bibstyle": "nature",
+    "ref_format": "numbered",
+    "abstract_limit": 200,
+    "keywords_limit": 0
+  },
+  "pasp": {
+    "full_name": "Publications of the Astronomical Society of the Pacific",
+    "abbreviation": "PASP",
+    "publisher": "IOP Publishing",
+    "document_class": "aastex701",
+    "class_options": ["aapm", "twocolumn"],
+    "bibstyle": "aasjournal",
+    "ref_format": "author-year",
+    "abstract_limit": 250,
+    "keywords_limit": 6
+  }
+}

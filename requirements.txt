@@ -1,0 +1,34 @@
+# astro-nova 后端核心依赖
+
+# ── Web 框架 ──
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic>=2.10.0
+
+# ── 数据库 ──
+sqlalchemy[asyncio]>=2.0.36
+aiosqlite>=0.20.0
+
+# ── LLM ──
+openai>=1.55.0
+anthropic>=0.46.0
+httpx>=0.28.0
+
+# ── 文献工具 ──
+arxiv>=2.1.0
+pymupdf>=1.23.0
+requests>=2.31.0
+
+# ── 科研绘图 (可选，Python 3.14 暂缺 wheel) ──
+# matplotlib>=3.8.0
+# numpy>=1.24.0
+# astropy>=5.3.0
+# scipy>=1.11.0
+
+# ── 知识库 RAG (可选) ──
+# sentence-transformers>=3.2.0
+# faiss-cpu>=1.9.0
+
+# ── 工具 ──
+python-multipart>=0.0.12
+PyJWT>=2.9.0

@@ -1,0 +1,96 @@
+## =====================================================================
+## astro-nova / references / figure-styles.mplstyle
+## ApJ / MNRAS / A&A 标准科研制图样式
+## 用法: plt.style.use("references/figure-styles.mplstyle")
+## =====================================================================
+
+## ── 尺寸 ──────────────────────────────────────────────────────────────
+figure.figsize        : 3.25, 2.5     # 单栏 (可被覆盖: 双栏 6.75, 5.0)
+figure.dpi            : 150
+savefig.dpi           : 300
+savefig.format        : pdf            # PDF 矢量输出
+savefig.bbox          : tight
+savefig.pad_inches    : 0.02
+
+## ── 字体 ──────────────────────────────────────────────────────────────
+font.family           : serif
+font.serif            : Times New Roman, Nimbus Roman, DejaVu Serif
+font.size             : 9              # 正文大小
+axes.titlesize        : 10             # 子图标题
+axes.labelsize        : 9              # 坐标轴标签
+xtick.labelsize       : 8              # X 轴刻度
+ytick.labelsize       : 8              # Y 轴刻度
+legend.fontsize       : 7.5            # 图例
+legend.title_fontsize : 8              # 图例标题
+
+## ── 文本渲染 ──────────────────────────────────────────────────────────
+## 若 LaTeX 不可用，设为 False
+text.usetex           : False
+mathtext.fontset      : stix           # STIX ≈ Times 的数学字体
+mathtext.default      : regular
+
+## ── 坐标轴 ────────────────────────────────────────────────────────────
+axes.linewidth        : 0.8            # 坐标轴框线
+axes.edgecolor        : black
+axes.labelpad         : 3.0
+axes.titlepad         : 4.0
+axes.spines.top       : True
+axes.spines.right     : True
+
+## ── 刻度 ──────────────────────────────────────────────────────────────
+## 向内刻度 (ApJ 标准)
+xtick.direction       : in
+ytick.direction       : in
+xtick.major.size      : 4.0
+xtick.minor.size      : 2.0
+ytick.major.size      : 4.0
+ytick.minor.size      : 2.0
+xtick.major.width     : 0.6
+xtick.minor.width     : 0.4
+ytick.major.width     : 0.6
+ytick.minor.width     : 0.4
+xtick.top             : True           # 上轴也有刻度
+ytick.right           : True           # 右轴也有刻度
+xtick.minor.visible   : False          # 需要时手动开启
+ytick.minor.visible   : False
+
+## ── 图例 ───────────────────────────────────────────────────────────────
+legend.frameon        : True
+legend.framealpha     : 0.9
+legend.fancybox       : False
+legend.edgecolor      : black
+legend.borderpad      : 0.3
+legend.handlelength   : 1.5
+legend.handletextpad  : 0.5
+
+## ── 网格 ───────────────────────────────────────────────────────────────
+## 科研图通常无网格; 需要时手动 ax.grid()
+axes.grid             : False
+
+## ── 线条 ───────────────────────────────────────────────────────────────
+lines.linewidth       : 1.5
+lines.linestyle       : -
+lines.color           : 1565c0         # info blue (NovaForge 色板)
+lines.marker          : None
+lines.markeredgewidth : 0.5
+lines.markersize      : 4.0
+
+## ── 图像 ──────────────────────────────────────────────────────────────
+image.cmap            : viridis         # 感知均匀色图
+image.interpolation   : none
+image.origin          : lower
+
+## ── 路径 ──────────────────────────────────────────────────────────────
+patch.linewidth       : 0.6
+patch.facecolor       : 1565c0
+patch.edgecolor       : black
+
+## ── 箱图 / 误差条 ────────────────────────────────────────────────────
+errorbar.capsize      : 2.0
+
+## ── 日期 ──────────────────────────────────────────────────────────────
+date.autoformatter.year  : %Y
+date.autoformatter.month : %b
+
+## ── 后端 ──────────────────────────────────────────────────────────────
+backend               : Agg

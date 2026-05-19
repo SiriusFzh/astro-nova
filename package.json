@@ -1,0 +1,75 @@
+{
+  "name": "astro-nova",
+  "version": "1.0.0",
+  "description": "AI 驱动的天文学全领域科研助手",
+  "main": "electron/main.js",
+  "scripts": {
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "electron:dev": "electron .",
+    "dev": "concurrently \"npm run frontend:dev\" \"npm run electron:dev\"",
+    "build": "npm run frontend:build && electron-builder",
+    "postinstall": "cd frontend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "electron": "^42.1.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "build": {
+    "appId": "com.astronova.app",
+    "productName": "AstroNova",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "astro_nova/",
+        "to": "backend/astro_nova/",
+        "filter": ["**/*", "!**/__pycache__/**", "!**/data/**", "!**/seed/**"]
+      },
+      {
+        "from": "astro_nova/knowledge/seed/",
+        "to": "backend/astro_nova/knowledge/seed/"
+      },
+      {
+        "from": "scripts/",
+        "to": "backend/scripts/"
+      },
+      {
+        "from": "references/",
+        "to": "backend/references/"
+      },
+      {
+        "from": "requirements.txt",
+        "to": "backend/requirements.txt"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.png",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AstroNova"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "SiriusFzh",
+      "repo": "astro-nova"
+    }
+  }
+}
