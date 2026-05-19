@@ -13,3 +13,5 @@ astro_nova/knowledge/data/
 !astro_nova/knowledge/seed/
 .astro-nova/
 *.log
+build/backend/
+build/pyinstaller/

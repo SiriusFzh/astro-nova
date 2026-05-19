@@ -28,26 +28,23 @@ function getTrayIcon() {
 
 // ── Python 后端 ──────────────────────────────────────────────────────
 function getPythonPath() {
+  // 生产环境: 使用 PyInstaller 打包的独立 EXE
   const bundled = path.join(process.resourcesPath, "backend", "astro_nova_backend.exe");
-  if (fs.existsSync(bundled)) return bundled;
-  return process.platform === "win32" ? "python" : "python3";
+  if (fs.existsSync(bundled)) return { exe: bundled, useModule: false };
+  // 开发环境: 使用系统 Python
+  const python = process.platform === "win32" ? "python" : "python3";
+  return { exe: python, useModule: true };
 }
 
 function startBackend() {
-  const pythonPath = getPythonPath();
+  const { exe, useModule } = getPythonPath();
   const isDev = !app.isPackaged;
 
-  // 生产模式下，后端代码在 resources/backend/ 下
-  // 用 python -m astro_nova 启动，cwd 指向 backend 目录
-  const backendDir = isDev
-    ? path.join(__dirname, "..")
-    : path.join(process.resourcesPath, "backend");
+  const args = useModule ? ["-m", "astro_nova"] : [];
+  const cwd = isDev ? path.join(__dirname, "..") : process.resourcesPath;
 
-  const args = ["-m", "astro_nova"];
-  const cwd = backendDir;
-
-  console.log(`[main] 启动后端: ${pythonPath} ${args.join(" ")} (cwd=${cwd})`);
-  pythonProcess = spawn(pythonPath, args, {
+  console.log(`[main] 启动后端: ${exe} (cwd=${cwd})`);
+  pythonProcess = spawn(exe, args, {
     cwd,
     stdio: ["ignore", "pipe", "pipe"],
     env: { ...process.env, PYTHONUNBUFFERED: "1" },

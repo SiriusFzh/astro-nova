@@ -1,9 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""PyInstaller 构建脚本 — 将 astro_nova 后端打包为单文件 EXE"""
+"""PyInstaller 构建 — astro_nova 后端 → 单文件夹 EXE"""
 import os
 import sys
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+ROOT = os.getcwd()
 sys.path.insert(0, ROOT)
 
 block_cipher = None
@@ -15,12 +15,10 @@ a = Analysis(
     datas=[
         (os.path.join(ROOT, "astro_nova", "knowledge", "seed", "*.json"),
          os.path.join("astro_nova", "knowledge", "seed")),
+        (os.path.join(ROOT, "skills"), "skills"),
+        (os.path.join(ROOT, "references"), "references"),
     ],
     hiddenimports=[
-        "pytesseract",
-        "cv2",
-        "numpy",
-        "fitz",
         "uvicorn",
         "uvicorn.logging",
         "uvicorn.loops",
@@ -30,11 +28,33 @@ a = Analysis(
         "uvicorn.protocols.http.auto",
         "uvicorn.middleware",
         "uvicorn.middleware.asgi2",
+        "uvicorn.middleware.proxy_headers",
+        "fastapi",
+        "pydantic",
+        "pydantic.deprecated",
+        "pydantic.json",
+        "sqlalchemy",
+        "sqlalchemy.sql.default_comparator",
+        "httpx",
+        "openai",
+        "anthropic",
+        "requests",
+        "xml",
+        "xml.etree",
+        "xml.etree.ElementTree",
+        "markdown",
+        "aiosqlite",
+        "multipart",
     ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=["tkinter", "matplotlib", "scipy", "PIL", "pandas"],
+    excludes=[
+        "tkinter", "PyQt5", "PySide6", "matplotlib", "scipy",
+        "PIL", "pandas", "notebook", "jupyter", "IPython",
+        "setuptools", "pip", "wheel", "test", "unittest",
+        "tensorflow", "torch", "torchvision",
+    ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -63,4 +83,15 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name="astro_nova_backend",
 )

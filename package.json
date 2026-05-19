@@ -9,7 +9,8 @@
     "frontend:build": "cd frontend && npm run build",
     "electron:dev": "electron .",
     "dev": "concurrently \"npm run frontend:dev\" \"npm run electron:dev\"",
-    "build": "npm run frontend:build && electron-builder",
+    "build": "npm run frontend:build && npm run backend:build && electron-builder",
+    "backend:build": "pyinstaller build/pyinstaller.spec --noconfirm 2>&1 | tail -1 && rm -rf build/backend && cp -r dist/astro_nova_backend build/backend",
     "postinstall": "cd frontend && npm install"
   },
   "devDependencies": {
@@ -33,25 +34,12 @@
     ],
     "extraResources": [
       {
-        "from": "astro_nova/",
-        "to": "backend/astro_nova/",
-        "filter": ["**/*", "!**/__pycache__/**", "!**/data/**", "!**/seed/**"]
-      },
-      {
-        "from": "astro_nova/knowledge/seed/",
-        "to": "backend/astro_nova/knowledge/seed/"
-      },
-      {
-        "from": "scripts/",
-        "to": "backend/scripts/"
+        "from": "build/backend",
+        "to": "backend"
       },
       {
         "from": "references/",
-        "to": "backend/references/"
-      },
-      {
-        "from": "requirements.txt",
-        "to": "backend/requirements.txt"
+        "to": "references/"
       }
     ],
     "win": {
