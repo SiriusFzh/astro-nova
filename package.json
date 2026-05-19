@@ -2,6 +2,7 @@
   "name": "astro-nova",
   "version": "1.0.0",
   "description": "AI 驱动的天文学全领域科研助手",
+  "author": "SiriusFzh",
   "main": "electron/main.js",
   "scripts": {
     "frontend:dev": "cd frontend && npm run dev",
