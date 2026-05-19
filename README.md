@@ -1,8 +1,14 @@
-# AstroNova 🔭
+<p align="center">
+  <img src="icon.png" alt="AstroNova" width="128">
+</p>
 
-**AI 驱动的天文学全领域科研助手桌面客户端**
+<h1 align="center">AstroNova</h1>
 
-从文献检索到论文发表，覆盖天文学科研全流程的一站式 AI 工具集。
+<p align="center">
+  <strong>AI 驱动的天文学全领域科研助手桌面客户端</strong>
+  <br>
+  从文献检索到论文发表，覆盖天文学科研全流程的一站式 AI 工具集。
+</p>
 
 ---
 
