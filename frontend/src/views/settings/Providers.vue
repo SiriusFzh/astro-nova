@@ -1,14 +1,14 @@
 <template>
   <div class="page">
     <div class="page-header">
-      <h2>模型配置</h2>
+      <h2>{{ $t('settings.providers.title') }}</h2>
       <el-button type="primary" @click="dialogVisible = true">
-        <el-icon><Plus /></el-icon> 添加 Provider
+        <el-icon><Plus /></el-icon> {{ $t('settings.providers.add') }}
       </el-button>
     </div>
 
     <!-- 空状态 -->
-    <el-empty v-if="!loading && providers.length === 0" description="还没有配置 LLM Provider，点击上方按钮添加" />
+    <el-empty v-if="!loading && providers.length === 0" :description="$t('settings.providers.empty')" />
 
     <!-- Provider 列表 -->
     <el-card v-for="p in providers" :key="p.id" class="provider-card" shadow="hover">
@@ -20,7 +20,7 @@
         </div>
         <div class="provider-right">
           <el-tag :type="p.is_active ? 'success' : 'info'" size="small" effect="plain">
-            {{ p.is_active ? '启用' : '停用' }}
+            {{ p.is_active ? $t('settings.providers.active') : $t('settings.providers.inactive') }}
           </el-tag>
           <el-tag type="warning" size="small" v-if="p.task_route !== 'all'">
             {{ taskRouteLabel(p.task_route) }}
@@ -29,66 +29,69 @@
         </div>
       </div>
       <div class="provider-meta">
-        <span v-if="p.website">官网: {{ p.website }}</span>
+        <span v-if="p.website">{{ $t('settings.providers.website') }}: {{ p.website }}</span>
         <span v-if="p.api_base">API: {{ p.api_base }}</span>
       </div>
     </el-card>
 
     <!-- 添加 Provider 对话框 -->
-    <el-dialog v-model="dialogVisible" title="添加 Provider" width="520px">
-      <el-form :model="form" label-width="100px">
-        <el-form-item label="供应商名称" required>
-          <el-input v-model="form.display_name" placeholder="例: OpenAI" />
+    <el-dialog v-model="dialogVisible" :title="$t('settings.providers.addTitle')" width="520px">
+      <el-form :model="form" :label-width="formLabelWidth">
+        <el-form-item :label="$t('settings.providers.fields.name')" required>
+          <el-input v-model="form.display_name" :placeholder="'例: OpenAI / Example: OpenAI'" />
         </el-form-item>
-        <el-form-item label="供应商类型" required>
+        <el-form-item :label="$t('settings.providers.fields.type')" required>
           <el-select v-model="form.provider_type" style="width:100%">
-            <el-option label="OpenAI 兼容" value="openai" />
-            <el-option label="DeepSeek" value="deepseek" />
-            <el-option label="Anthropic Claude" value="anthropic" />
-            <el-option label="Ollama 本地" value="ollama" />
+            <el-option :label="$t('settings.providers.types.openai')" value="openai" />
+            <el-option :label="$t('settings.providers.types.deepseek')" value="deepseek" />
+            <el-option :label="$t('settings.providers.types.anthropic')" value="anthropic" />
+            <el-option :label="$t('settings.providers.types.ollama')" value="ollama" />
           </el-select>
         </el-form-item>
-        <el-form-item label="官网链接">
-          <el-input v-model="form.website" placeholder="例: https://openai.com" />
+        <el-form-item :label="$t('settings.providers.fields.website')">
+          <el-input v-model="form.website" :placeholder="'例: https://openai.com'" />
         </el-form-item>
-        <el-form-item label="模型型号" required>
-          <el-input v-model="form.model" placeholder="例: gpt-4o / claude-sonnet-4-20250514" />
+        <el-form-item :label="$t('settings.providers.fields.model')" required>
+          <el-input v-model="form.model" :placeholder="'例: gpt-4o / claude-sonnet-4-20250514'" />
         </el-form-item>
-        <el-form-item label="API 地址">
-          <el-input v-model="form.api_base" placeholder="例: https://api.openai.com/v1" />
+        <el-form-item :label="$t('settings.providers.fields.apiBase')">
+          <el-input v-model="form.api_base" :placeholder="'例: https://api.openai.com/v1'" />
         </el-form-item>
-        <el-form-item label="API Key" required>
+        <el-form-item :label="$t('settings.providers.fields.apiKey')" required>
           <el-input v-model="form.api_key" type="password" show-password placeholder="sk-..." />
         </el-form-item>
-        <el-form-item label="任务路由">
+        <el-form-item :label="$t('settings.providers.fields.taskRoute')">
           <el-select v-model="form.task_route" style="width:100%">
-            <el-option label="所有任务 (默认)" value="all" />
-            <el-option label="对话" value="chat" />
-            <el-option label="文献搜索" value="search" />
-            <el-option label="论文精读" value="read" />
-            <el-option label="笔记/写作" value="write" />
-            <el-option label="代码/制图" value="code" />
+            <el-option :label="$t('settings.providers.routes.all')" value="all" />
+            <el-option :label="$t('settings.providers.routes.chat')" value="chat" />
+            <el-option :label="$t('settings.providers.routes.search')" value="search" />
+            <el-option :label="$t('settings.providers.routes.read')" value="read" />
+            <el-option :label="$t('settings.providers.routes.write')" value="write" />
+            <el-option :label="$t('settings.providers.routes.code')" value="code" />
           </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleAdd" :loading="saving">添加</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('settings.providers.cancel') || $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleAdd" :loading="saving">{{ $t('settings.providers.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { getProviders, createProvider, deleteProvider } from "@/api/client";
 import { Plus, Delete } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 
+const { t } = useI18n();
 const providers = ref<any[]>([]);
 const loading = ref(false);
 const saving = ref(false);
 const dialogVisible = ref(false);
+const formLabelWidth = computed(() => t('settings.providers.fields.name').length > 6 ? '120px' : '100px');
 
 const form = ref({
   display_name: "",
@@ -107,8 +110,15 @@ function getProviderTag(type: string) {
 }
 
 function taskRouteLabel(route: string) {
-  const map: Record<string, string> = { all: "通用", chat: "对话", search: "搜索", read: "精读", write: "写作", code: "代码" };
-  return map[route] || route;
+  const labels: Record<string, string> = {
+    all: t('settings.providers.routes.all'),
+    chat: t('settings.providers.routes.chat'),
+    search: t('settings.providers.routes.search'),
+    read: t('settings.providers.routes.read'),
+    write: t('settings.providers.routes.write'),
+    code: t('settings.providers.routes.code'),
+  };
+  return labels[route] || route;
 }
 
 async function loadProviders() {
@@ -122,19 +132,19 @@ async function loadProviders() {
 
 async function handleAdd() {
   if (!form.value.display_name || !form.value.model || !form.value.api_key) {
-    ElMessage.warning("请填写必填字段");
+    ElMessage.warning(t('settings.providers.pleaseFillRequired'));
     return;
   }
   form.value.name = `${form.value.provider_type}-${Date.now()}`;
   saving.value = true;
   try {
     await createProvider(form.value);
-    ElMessage.success("添加成功");
+    ElMessage.success(t('settings.providers.added'));
     dialogVisible.value = false;
     form.value = { display_name: "", provider_type: "openai", website: "", model: "", api_base: "", api_key: "", task_route: "all", name: "" };
     await loadProviders();
   } catch (e: any) {
-    ElMessage.error(e.response?.data?.detail || "添加失败");
+    ElMessage.error(e.response?.data?.detail || t('settings.providers.addFailed'));
   } finally {
     saving.value = false;
   }
@@ -142,9 +152,9 @@ async function handleAdd() {
 
 async function handleDelete(id: number) {
   try {
-    await ElMessageBox.confirm("确定删除这个 Provider？", "确认");
+    await ElMessageBox.confirm(t('settings.providers.deleteConfirm'), t('settings.providers.deleteTitle'));
     await deleteProvider(id);
-    ElMessage.success("已删除");
+    ElMessage.success(t('settings.providers.deleted'));
     await loadProviders();
   } catch {}
 }

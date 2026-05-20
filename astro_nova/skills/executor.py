@@ -89,7 +89,7 @@ class SkillManager:
         if not skills:
             return ""
 
-        parts = ["你是一个天文学科研助手。以下是你可以使用的技能及其指令：\n"]
+        parts = ["你是一个天文学科研助手。以下是你可以使用的技能。日常回答保持自然简洁，不要主动推送这些技能说明：\n"]
         for s in skills:
             parts.append(f"===== {s.name}: {s.description} =====\n")
             parts.append(s.prompt)

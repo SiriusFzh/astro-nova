@@ -1,24 +1,24 @@
 <template>
   <div class="page">
-    <div class="page-header"><h2>文献搜索</h2></div>
+    <div class="page-header"><h2>{{ $t('search.title') }}</h2></div>
     <div class="search-bar">
-      <el-input v-model="query" placeholder="搜索关键词, 如: neutron star mergers" @keydown.enter="handleSearch" />
-      <el-button type="primary" @click="handleSearch" :loading="loading">搜索</el-button>
+      <el-input v-model="query" :placeholder="$t('search.placeholder')" @keydown.enter="handleSearch" />
+      <el-button type="primary" @click="handleSearch" :loading="loading">{{ $t('search.search') }}</el-button>
     </div>
     <div class="search-opts">
-      <el-select v-model="categories" multiple collapse-tags placeholder="选择分类" style="width:300px">
-        <el-option label="天体物理全部" value="astro-ph" />
-        <el-option label="高能天体物理" value="astro-ph.HE" />
-        <el-option label="宇宙学" value="astro-ph.CO" />
-        <el-option label="星系与天体测量" value="astro-ph.GA" />
-        <el-option label="系外行星" value="astro-ph.EP" />
-        <el-option label="太阳与恒星" value="astro-ph.SR" />
-        <el-option label="天文技术与仪器" value="astro-ph.IM" />
-        <el-option label="引力波" value="gr-qc" />
+      <el-select v-model="categories" multiple collapse-tags :placeholder="$t('search.selectCategory')" style="width:300px">
+        <el-option :label="$t('search.categories.all')" value="astro-ph" />
+        <el-option :label="$t('search.categories.he')" value="astro-ph.HE" />
+        <el-option :label="$t('search.categories.co')" value="astro-ph.CO" />
+        <el-option :label="$t('search.categories.ga')" value="astro-ph.GA" />
+        <el-option :label="$t('search.categories.ep')" value="astro-ph.EP" />
+        <el-option :label="$t('search.categories.sr')" value="astro-ph.SR" />
+        <el-option :label="$t('search.categories.im')" value="astro-ph.IM" />
+        <el-option :label="$t('search.categories.gw')" value="gr-qc" />
       </el-select>
       <el-input-number v-model="maxResults" :min="5" :max="50" size="small" />
     </div>
-    <el-empty v-if="!loading && results.length === 0" description="输入关键词开始搜索" />
+    <el-empty v-if="!loading && results.length === 0" :description="$t('search.empty')" />
     <el-card v-for="(p, i) in results" :key="i" class="paper-card" shadow="hover">
       <div class="paper-num">{{ i + 1 }}</div>
       <div class="paper-body">
@@ -30,7 +30,7 @@
         </div>
         <p class="paper-summary">{{ p.summary }}</p>
         <div class="paper-actions">
-          <el-button size="small" :icon="Download" @click="fetchPaperDetail(p.arxiv_id)">获取全文</el-button>
+          <el-button size="small" :icon="Download" @click="fetchPaperDetail(p.arxiv_id)">{{ $t('search.getFullText') }}</el-button>
         </div>
       </div>
     </el-card>
@@ -39,10 +39,12 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { searchPapers, fetchPaper } from "@/api/client";
 import { Download } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
+const { t } = useI18n();
 const query = ref("");
 const categories = ref(["astro-ph"]);
 const maxResults = ref(10);
@@ -56,19 +58,19 @@ async function handleSearch() {
     const data = await searchPapers(query.value, maxResults.value, categories.value);
     results.value = data.papers || [];
   } catch {
-    ElMessage.error("搜索失败");
+    ElMessage.error(t('search.searchFailed'));
   } finally {
     loading.value = false;
   }
 }
 
 async function fetchPaperDetail(arxivId: string) {
-  ElMessage.info("正在获取论文详情...");
+  ElMessage.info(t('search.fetchingPaper'));
   try {
     const data = await fetchPaper(arxivId);
-    ElMessage.success("获取成功");
+    ElMessage.success(t('search.fetchSuccess'));
   } catch {
-    ElMessage.error("获取失败");
+    ElMessage.error(t('search.fetchFailed'));
   }
 }
 </script>

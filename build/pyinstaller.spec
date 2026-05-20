@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""PyInstaller 构建 — astro_nova 后端 → 单文件夹 EXE"""
+"""PyInstaller 构建 — astro_nova 后端 → 单文件 EXE (onefile)"""
 import os
 import sys
 
@@ -17,8 +17,15 @@ a = Analysis(
          os.path.join("astro_nova", "knowledge", "seed")),
         (os.path.join(ROOT, "skills"), "skills"),
         (os.path.join(ROOT, "references"), "references"),
+        (os.path.join(ROOT, "astro_nova", "novaforge", "templates"),
+         os.path.join("astro_nova", "novaforge", "templates")),
     ],
     hiddenimports=[
+        "bs4",
+        "arxiv",
+        "arxiv.arxiv",
+        "arxiv._arxiv",
+        "fitz",
         "uvicorn",
         "uvicorn.logging",
         "uvicorn.loops",
@@ -35,10 +42,8 @@ a = Analysis(
         "pydantic.json",
         "sqlalchemy",
         "sqlalchemy.sql.default_comparator",
-        "httpx",
-        "openai",
-        "anthropic",
-        "requests",
+        "certifi",
+        "charset_normalizer",
         "xml",
         "xml.etree",
         "xml.etree.ElementTree",
@@ -74,7 +79,7 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,
     upx_exclude=[],
     runtime_tmpdir=None,
     console=True,
@@ -83,15 +88,4 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-)
-
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name="astro_nova_backend",
 )

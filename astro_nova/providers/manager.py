@@ -5,6 +5,7 @@
 from typing import Optional
 from astro_nova.providers.base import BaseProvider, LLMMessage
 from astro_nova.providers.openai import OpenAIProvider
+from astro_nova.providers.deepseek import DeepSeekProvider
 from astro_nova.tools.registry import Tool
 try:
     from astro_nova.providers.anthropic import AnthropicProvider
@@ -14,7 +15,7 @@ from astro_nova.utils.logger import logger
 
 PROVIDER_REGISTRY = {
     "openai": OpenAIProvider,
-    "deepseek": OpenAIProvider,   # DeepSeek 使用 OpenAI 兼容 API
+    "deepseek": DeepSeekProvider,   # DeepSeek 使用 OpenAI 兼容 API
     "ollama": OpenAIProvider,     # Ollama 同样兼容 OpenAI API
 }
 if AnthropicProvider:

@@ -139,8 +139,8 @@ Provider D: Ollama   → 负责 本地简单问答
 
 从 [GitHub Releases](https://github.com/SiriusFzh/astro-nova/releases) 下载对应系统的安装包：
 
-- **Windows**: `AstroNova-Setup-1.0.0.exe` — 双击安装，桌面上会出现快捷方式
-- **macOS (Intel / Apple Silicon)**: `AstroNova-1.0.0-mac.dmg` — 打开 DMG 将 AstroNova 拖入 Applications
+- **Windows**: `AstroNova_1.0.0_x64-setup.exe` — 双击安装，桌面上会出现快捷方式
+- **macOS (Intel / Apple Silicon)**: `AstroNova_1.0.0_x64.dmg` — 打开 DMG 将 AstroNova 拖入 Applications
 
 **无需安装 Python**（内置独立后端）
 
@@ -157,9 +157,9 @@ pip install -r requirements.txt
 # 前端依赖
 cd frontend && npm install && cd ..
 
-# 启动开发模式（后端 + 前端 + Electron）
+# 启动开发模式（后端 + 前端 + Tauri 桌面窗口）
 npm install
-npm run dev
+npm run tauri:dev
 ```
 
 支持 **Windows 10/11** 和 **macOS 13+** 两种开发环境。
@@ -174,7 +174,7 @@ npm run dev
 | **数据库** | SQLite + SQLAlchemy (async) |
 | **LLM 接入** | OpenAI SDK + Anthropic SDK + 统一 Provider 抽象层 |
 | **前端** | Vue 3 (Composition API) + Element Plus + Vite |
-| **桌面** | Electron 42 + electron-builder (NSIS + DMG) |
+| **桌面** | Tauri 2 + WebView2 (原生 Windows 窗口) |
 | **知识库** | BM25 全文检索 (自研) |
 | **打包** | PyInstaller (后端独立 EXE) |
 
@@ -215,9 +215,13 @@ astro-nova/
 │       ├── Writing.vue        # 论文写作
 │       ├── PPT.vue            # PPT 生成
 │       └── settings/          # 设置页面
-├── electron/                  # Electron 桌面端
-│   ├── main.js                # 主进程 + 系统托盘 + 自动更新
-│   └── preload.js             # IPC 桥接
+├── src-tauri/                 # Tauri 桌面端 (Rust)
+│   ├── src/lib.rs             # 主逻辑：后端进程管理
+│   ├── src/main.rs            # Windows 入口
+│   ├── tauri.conf.json        # 窗口/打包/安全配置
+│   ├── Cargo.toml             # Rust 依赖
+│   ├── icons/                 # 应用图标
+│   └── binaries/              # 后端 sidecar 二进制
 ├── skills/                    # 预置 SKILL.md
 │   ├── astro-search/
 │   ├── astro-reader/

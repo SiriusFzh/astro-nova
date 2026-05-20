@@ -16,7 +16,8 @@ from collections import Counter
 from typing import Optional
 
 # 用户可写的数据目录
-_USER_DATA_DIR = os.path.expanduser("~/.astro-nova/knowledge")
+from astro_nova.utils.paths import get_data_dir as _get_data_dir
+_USER_DATA_DIR = _get_data_dir("knowledge")
 os.makedirs(_USER_DATA_DIR, exist_ok=True)
 
 # 包内种子数据目录（随安装包发布）

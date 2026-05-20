@@ -1,0 +1,6 @@
+[target.x86_64-pc-windows-gnu]
+rustflags = [
+    "--sysroot=C:/u/.rustup/toolchains/stable-x86_64-pc-windows-gnu",
+    "-L", "C:/cargo-windows-0.53.1",
+    "-L", "C:/cargo-windows-0.52.6",
+]

@@ -1,6 +1,6 @@
 """Provider 配置管理 API"""
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional
 
 from astro_nova.database.connection import async_session
@@ -22,6 +22,13 @@ class ProviderCreate(BaseModel):
     model: str                   # 模型型号
     task_route: str = "all"
     is_active: bool = True
+
+    @field_validator("name", "provider_type", "display_name", "model")
+    @classmethod
+    def not_blank(cls, v, info):
+        if not v or not v.strip():
+            raise ValueError(f"{info.field_name} 不能为空")
+        return v.strip()
 
 
 class ProviderUpdate(ProviderCreate):
@@ -69,6 +76,20 @@ async def create_provider(cfg: ProviderCreate):
     return {"status": "ok", "name": cfg.name}
 
 
+@router.put("/{provider_id}")
+async def update_provider(provider_id: int, cfg: ProviderCreate):
+    """更新 Provider 配置"""
+    async with async_session() as session:
+        p = await session.get(ProviderConfig, provider_id)
+        if not p:
+            raise HTTPException(404, "Provider 不存在")
+        for key, value in cfg.model_dump().items():
+            setattr(p, key, value)
+        await session.commit()
+    await _reload_providers()
+    return {"status": "ok", "name": cfg.name}
+
+
 @router.delete("/{provider_id}")
 async def delete_provider(provider_id: int):
     """删除 Provider"""
@@ -82,8 +103,25 @@ async def delete_provider(provider_id: int):
     return {"status": "ok"}
 
 
+async def _cleanup_invalid_providers():
+    """清理数据库中缺少必填字段的 Provider 记录"""
+    async with async_session() as session:
+        result = await session.execute(select(ProviderConfig))
+        all_configs = result.scalars().all()
+        removed = 0
+        for c in all_configs:
+            if not c.name or not c.name.strip() or not c.provider_type or not c.display_name or not c.model:
+                logger.warning(f"清理无效 Provider: id={c.id} name={c.name!r}")
+                await session.delete(c)
+                removed += 1
+        if removed:
+            await session.commit()
+            logger.info(f"已清理 {removed} 个无效 Provider")
+
+
 async def _reload_providers():
-    """从数据库重新加载所有 Provider"""
+    """从数据库重新加载所有 Provider，先清理无效记录"""
+    await _cleanup_invalid_providers()
     async with async_session() as session:
         result = await session.execute(select(ProviderConfig))
         configs = result.scalars().all()

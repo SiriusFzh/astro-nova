@@ -18,7 +18,9 @@ from astro_nova.tools.arxiv_search import fetch_by_id as _fetch_meta
 from astro_nova.tools.registry import Tool, registry
 from astro_nova.utils.logger import logger
 
-SLIDE_DIR = os.path.join(os.path.expanduser("~"), ".astro-nova", "slides")
+from astro_nova.utils.paths import get_data_dir as _get_data_dir
+
+SLIDE_DIR = _get_data_dir("slides")
 
 STYLE_CONFIGS = {
     "journal_club": {

@@ -1,9 +1,9 @@
 <template>
   <div class="page">
-    <div class="page-header"><h2>技能管理</h2></div>
-    <p class="page-desc">管理 SKILL.md 技能 — 激活的技能会作为系统提示注入到 AI 对话中。</p>
+    <div class="page-header"><h2>{{ $t('settings.skills.title') }}</h2></div>
+    <p class="page-desc">{{ $t('settings.skills.desc') }}</p>
 
-    <el-empty v-if="loading && skills.length === 0" description="加载中..." />
+    <el-empty v-if="loading && skills.length === 0" :description="$t('settings.skills.loading')" />
     <div v-for="s in skills" :key="s.name" class="skill-card">
       <div class="skill-header">
         <div class="skill-info">
@@ -13,8 +13,8 @@
         <el-switch
           :model-value="s.is_active"
           @change="(val: boolean) => toggle(s.name, val)"
-          active-text="激活"
-          inactive-text="关闭"
+          :active-text="$t('settings.skills.active')"
+          :inactive-text="$t('settings.skills.inactive')"
         />
       </div>
       <div class="skill-body" v-if="s.is_active">
@@ -31,15 +31,17 @@
       </div>
     </div>
 
-    <el-empty v-if="!loading && skills.length === 0" description="没有找到技能文件" />
+    <el-empty v-if="!loading && skills.length === 0" :description="$t('settings.skills.empty')" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { getSkills, toggleSkill } from "@/api/client";
 import { ElMessage } from "element-plus";
 
+const { t } = useI18n();
 const skills = ref<any[]>([]);
 const loading = ref(false);
 
@@ -49,7 +51,7 @@ onMounted(async () => {
     const data = await getSkills();
     skills.value = data.skills || [];
   } catch {
-    ElMessage.error("获取技能列表失败");
+    ElMessage.error(t('settings.skills.fetchFailed'));
   } finally {
     loading.value = false;
   }
@@ -60,9 +62,9 @@ async function toggle(name: string, active: boolean) {
     await toggleSkill(name, active);
     const s = skills.value.find((x) => x.name === name);
     if (s) s.is_active = active;
-    ElMessage.success(active ? "已激活" : "已关闭");
+    ElMessage.success(active ? t('settings.skills.toggleActive') : t('settings.skills.toggleInactive'));
   } catch {
-    ElMessage.error("操作失败");
+    ElMessage.error(t('settings.skills.toggleFailed'));
   }
 }
 </script>

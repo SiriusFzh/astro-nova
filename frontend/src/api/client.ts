@@ -1,9 +1,49 @@
 import axios from "axios";
 
+// Tauri v2 生产环境 protocol 为 "https:"，无法用 "/api" 代理到后端
+// 无论开发/生产都直连 Python 后端
+const API_BASE = "http://127.0.0.1:8615/api";
+
 const api = axios.create({
-  baseURL: "/api",
-  timeout: 60000,
+  baseURL: API_BASE,
+  timeout: 300000,  // 5 分钟（digest 爬 arXiv 需要较长时间）
 });
+
+// ── Conversations ──
+export async function listConversations() {
+  const resp = await api.get("/conversations");
+  return resp.data;
+}
+
+export async function createConversation(title = "新对话") {
+  const resp = await api.post("/conversations", { title });
+  return resp.data;
+}
+
+export async function getConversation(id: number) {
+  const resp = await api.get(`/conversations/${id}`);
+  return resp.data;
+}
+
+export async function updateConversation(id: number, data: { title?: string; messages?: any[] }) {
+  const resp = await api.put(`/conversations/${id}`, data);
+  return resp.data;
+}
+
+export async function deleteConversation(id: number) {
+  const resp = await api.delete(`/conversations/${id}`);
+  return resp.data;
+}
+
+export async function editMessage(convId: number, msgIdx: number, content: string) {
+  const resp = await api.patch(`/conversations/${convId}/messages/${msgIdx}`, { index: msgIdx, content });
+  return resp.data;
+}
+
+export async function deleteMessage(convId: number, msgIdx: number) {
+  const resp = await api.delete(`/conversations/${convId}/messages/${msgIdx}`);
+  return resp.data;
+}
 
 // ── Chat ──
 export async function chat(messages: any[], taskType = "chat") {
@@ -54,25 +94,46 @@ export async function readPaper(arxivId: string, language = "中文") {
   return resp.data;
 }
 
-// ── Notes ──
+// ── Notes (NovaForge) ──
 export async function listNotes() {
-  const resp = await api.get("/notes");
+  const resp = await api.get("/tools/notes/list");
+  return resp.data.notes || [];
+}
+
+export async function deleteNote(arxivId: string) {
+  const resp = await api.delete(`/tools/notes/${arxivId}`);
   return resp.data;
 }
 
-export async function createNote(note: any) {
-  const resp = await api.post("/notes", note);
+export async function getNoteInfo(arxivId: string) {
+  const resp = await api.get(`/tools/notes/info/${arxivId}`);
   return resp.data;
 }
 
-export async function deleteNote(id: number) {
-  const resp = await api.delete(`/notes/${id}`);
+export async function generateNote(arxivId: string, title: string, content = "", mode = "research-note", compilePdf = true) {
+  const resp = await api.post("/tools/note", {
+    arxiv_id: arxivId,
+    title,
+    content,
+    mode,
+    compile_pdf: compilePdf,
+  });
   return resp.data;
 }
 
-export async function generateNote(arxivId: string, title: string, content = "") {
-  const resp = await api.post("/tools/note", { arxiv_id: arxivId, title, content });
+export async function recompileNote(arxivId: string) {
+  const resp = await api.post(`/tools/notes/recompile/${arxivId}`);
   return resp.data;
+}
+
+export async function getNovaForgeModes() {
+  const resp = await api.get("/tools/novaforge/modes");
+  return resp.data.modes || [];
+}
+
+export async function getNovaForgeOutputDir() {
+  const resp = await api.get("/tools/novaforge/output-dir");
+  return resp.data.path || "";
 }
 
 // ── Figure Code Generator ──
@@ -153,6 +214,42 @@ export async function reloadPlugin(name: string) {
 
 export async function scanPlugins() {
   const resp = await api.post("/plugins/scan");
+  return resp.data;
+}
+
+// ── Daily Digest ──
+export async function runDigest(categories: string[] = [], maxPerCat = 50, enhance = true) {
+  const resp = await api.post("/tools/digest/run", {
+    categories: categories.length > 0 ? categories : null,
+    max_per_cat: maxPerCat,
+    enhance,
+  });
+  return resp.data;
+}
+
+export async function listDigestDates() {
+  const resp = await api.get("/tools/digest/dates");
+  return resp.data.dates || [];
+}
+
+export async function getDigest(dateStr: string) {
+  const resp = await api.get(`/tools/digest/${dateStr}`);
+  return resp.data;
+}
+
+// ── Paper Viewer & Chat ──
+export async function openPaper(arxivId: string, signal?: AbortSignal) {
+  const resp = await api.post("/tools/paper/open", { arxiv_id: arxivId }, { signal });
+  return resp.data;
+}
+
+export async function paperChat(arxivId: string, message: string, history: any[] = [], paperText = "", signal?: AbortSignal) {
+  const resp = await api.post("/tools/paper/chat", { arxiv_id: arxivId, message, history, paper_text: paperText }, { signal });
+  return resp.data;
+}
+
+export async function summarizePaper(arxivId: string, signal?: AbortSignal) {
+  const resp = await api.post("/tools/paper/summarize", { arxiv_id: arxivId }, { signal });
   return resp.data;
 }
 

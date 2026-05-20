@@ -1,42 +1,44 @@
 <template>
   <div class="page">
     <div class="page-header">
-      <h2>插件管理</h2>
-      <el-button type="primary" size="small" @click="scan" :loading="scanning">扫描插件目录</el-button>
+      <h2>{{ $t('settings.plugins.title') }}</h2>
+      <el-button type="primary" size="small" @click="scan" :loading="scanning">{{ $t('settings.plugins.scan') }}</el-button>
     </div>
-    <p class="page-desc">管理 plugins_user 目录中的插件 — 激活的插件会注册工具供 AI 调用。</p>
+    <p class="page-desc">{{ $t('settings.plugins.desc') }}</p>
 
-    <el-empty v-if="loading && plugins.length === 0" description="加载中..." />
+    <el-empty v-if="loading && plugins.length === 0" :description="$t('settings.plugins.loading')" />
 
     <div v-for="p in plugins" :key="p.name" class="plugin-card">
       <div class="plugin-header">
         <div class="plugin-info">
           <span class="plugin-name">{{ p.name }}</span>
           <span class="plugin-version">v{{ p.version }}</span>
-          <span class="plugin-desc">{{ p.description || "暂无描述" }}</span>
+          <span class="plugin-desc">{{ p.description || $t('settings.plugins.noDesc') }}</span>
         </div>
         <div class="plugin-actions">
-          <el-tag v-if="p.is_active" type="success" size="small" effect="dark">已激活</el-tag>
-          <el-tag v-else type="info" size="small" effect="plain">未激活</el-tag>
-          <el-button size="small" :disabled="!p.is_active" @click="reload(p.name)" :loading="loadingMap[p.name] === 'reload'">重载</el-button>
-          <el-button size="small" :disabled="!p.is_active" @click="unload(p.name)" :loading="loadingMap[p.name] === 'unload'" type="danger" plain>卸载</el-button>
+          <el-tag v-if="p.is_active" type="success" size="small" effect="dark">{{ $t('settings.plugins.active') }}</el-tag>
+          <el-tag v-else type="info" size="small" effect="plain">{{ $t('settings.plugins.inactive') }}</el-tag>
+          <el-button size="small" :disabled="!p.is_active" @click="reload(p.name)" :loading="loadingMap[p.name] === 'reload'">{{ $t('settings.plugins.reload') }}</el-button>
+          <el-button size="small" :disabled="!p.is_active" @click="unload(p.name)" :loading="loadingMap[p.name] === 'unload'" type="danger" plain>{{ $t('settings.plugins.unload') }}</el-button>
         </div>
       </div>
       <div class="plugin-meta" v-if="p.tool_count !== undefined">
-        <el-tag size="small" type="info" effect="plain">{{ p.tool_count }} 个工具</el-tag>
+        <el-tag size="small" type="info" effect="plain">{{ p.tool_count }} {{ $t('settings.plugins.toolCount') }}</el-tag>
         <el-tag v-if="p.author" size="small" type="warning" effect="plain">{{ p.author }}</el-tag>
       </div>
     </div>
 
-    <el-empty v-if="!loading && plugins.length === 0" description="没有找到插件，请将插件放在 plugins_user 目录" />
+    <el-empty v-if="!loading && plugins.length === 0" :description="$t('settings.plugins.empty')" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { getPlugins, reloadPlugin, unloadPlugin, scanPlugins } from "@/api/client";
 import { ElMessage } from "element-plus";
 
+const { t } = useI18n();
 const plugins = ref<any[]>([]);
 const loading = ref(false);
 const scanning = ref(false);
@@ -52,7 +54,7 @@ async function fetchList() {
     const data = await getPlugins();
     plugins.value = data.plugins || [];
   } catch {
-    ElMessage.error("获取插件列表失败");
+    ElMessage.error(t('settings.plugins.fetchFailed'));
   } finally {
     loading.value = false;
   }
@@ -62,10 +64,10 @@ async function scan() {
   scanning.value = true;
   try {
     const data = await scanPlugins();
-    ElMessage.success(data.message);
+    ElMessage.success(t('settings.plugins.scanSuccess'));
     await fetchList();
   } catch {
-    ElMessage.error("扫描失败");
+    ElMessage.error(t('settings.plugins.scanFailed'));
   } finally {
     scanning.value = false;
   }
@@ -75,9 +77,9 @@ async function reload(name: string) {
   loadingMap.value[name] = "reload";
   try {
     const data = await reloadPlugin(name);
-    ElMessage.success(data.message);
+    ElMessage.success(t('settings.plugins.reloadSuccess'));
   } catch {
-    ElMessage.error("重载失败");
+    ElMessage.error(t('settings.plugins.reloadFailed'));
   } finally {
     delete loadingMap.value[name];
   }
@@ -87,10 +89,10 @@ async function unload(name: string) {
   loadingMap.value[name] = "unload";
   try {
     const data = await unloadPlugin(name);
-    ElMessage.success(data.message);
+    ElMessage.success(t('settings.plugins.unloadSuccess'));
     await fetchList();
   } catch {
-    ElMessage.error("卸载失败");
+    ElMessage.error(t('settings.plugins.unloadFailed'));
   } finally {
     delete loadingMap.value[name];
   }

@@ -20,7 +20,9 @@ MPLSTYLE_PATH = os.path.join(
     os.path.dirname(__file__), "..", "..", "references", "figure-styles.mplstyle"
 )
 
-CODE_OUTPUT_DIR = os.path.join(os.path.expanduser("~"), ".astro-nova", "figures")
+from astro_nova.utils.paths import get_data_dir as _get_data_dir
+
+CODE_OUTPUT_DIR = _get_data_dir("figures")
 
 PLOT_TYPE_PROMPTS = {
     "spectrum": "光谱图: x轴=波长/频率, y轴=流量/强度, 展示谱线特征",

@@ -1,59 +1,55 @@
 <template>
   <div class="page">
-    <div class="page-header"><h2>通用设置</h2></div>
-    <p class="page-desc">配置 AstroNova 运行参数、界面偏好和默认行为。</p>
+    <div class="page-header"><h2>{{ $t('settings.general.title') }}</h2></div>
+    <p class="page-desc">{{ $t('settings.general.desc') }}</p>
 
-    <div v-if="loading" class="loading-wrap"><el-icon class="is-loading" :size="24"><Loading /></el-icon> 加载中...</div>
+    <div v-if="loading" class="loading-wrap"><el-icon class="is-loading" :size="24"><Loading /></el-icon> {{ $t('common.loading') }}</div>
 
     <el-form v-else label-position="top" class="settings-form">
-      <!-- 界面 -->
       <el-card shadow="never" class="sec-card">
-        <template #header><span class="sec-title">界面</span></template>
-        <el-form-item label="界面语言">
-          <el-radio-group v-model="cfg.language">
+        <template #header><span class="sec-title">{{ $t('settings.general.interface') }}</span></template>
+        <el-form-item :label="$t('settings.general.language')">
+          <el-radio-group v-model="cfg.language" @change="switchLanguage">
             <el-radio value="zh-CN">简体中文</el-radio>
             <el-radio value="en">English</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="主题">
+        <el-form-item :label="$t('settings.general.theme')">
           <el-radio-group v-model="cfg.theme">
-            <el-radio value="light">浅色</el-radio>
-            <el-radio value="dark">深色</el-radio>
-            <el-radio value="auto">跟随系统</el-radio>
+            <el-radio value="light">{{ $t('settings.general.light') }}</el-radio>
+            <el-radio value="dark">{{ $t('settings.general.dark') }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-card>
 
-      <!-- LLM 默认参数 -->
       <el-card shadow="never" class="sec-card">
-        <template #header><span class="sec-title">LLM 默认参数</span></template>
-        <el-form-item label="默认任务类型">
+        <template #header><span class="sec-title">{{ $t('settings.general.llm') }}</span></template>
+        <el-form-item :label="$t('settings.general.defaultTask')">
           <el-select v-model="cfg.default_task_type" style="width:240px">
             <el-option label="通用对话 (chat)" value="chat" />
             <el-option label="文献搜索与精读 (search/read)" value="search" />
             <el-option label="笔记生成 (write)" value="write" />
             <el-option label="制图代码 (code)" value="code" />
           </el-select>
-          <p class="form-tip">选择 Provider 时若 task_route 匹配此值则优先使用</p>
+          <p class="form-tip">{{ $t('settings.general.taskTip') }}</p>
         </el-form-item>
-        <el-form-item label="最大输出 Token">
+        <el-form-item :label="$t('settings.general.maxTokens')">
           <el-input-number v-model="cfg.max_tokens" :min="512" :max="32768" :step="512" />
-          <p class="form-tip">限制 LLM 单次回复的最大 token 数</p>
+          <p class="form-tip">{{ $t('settings.general.tokenTip') }}</p>
         </el-form-item>
-        <el-form-item label="Temperature">
+        <el-form-item :label="$t('settings.general.temperature')">
           <el-slider v-model="cfg.temperature" :min="0" :max="2" :step="0.1" style="width:300px" />
-          <p class="form-tip">较低值使输出更确定，较高值更有创造力（默认 0.7）</p>
+          <p class="form-tip">{{ $t('settings.general.tempTip') }}</p>
         </el-form-item>
       </el-card>
 
-      <!-- 服务 -->
       <el-card shadow="never" class="sec-card">
-        <template #header><span class="sec-title">服务</span></template>
-        <el-form-item label="后端端口">
+        <template #header><span class="sec-title">{{ $t('settings.general.service') }}</span></template>
+        <el-form-item :label="$t('settings.general.port')">
           <el-input-number v-model="cfg.port" :min="1024" :max="65535" />
-          <p class="form-tip">重启后生效，默认 8615</p>
+          <p class="form-tip">{{ $t('settings.general.portTip') }}</p>
         </el-form-item>
-        <el-form-item label="日志等级">
+        <el-form-item :label="$t('settings.general.logLevel')">
           <el-select v-model="cfg.log_level" style="width:180px">
             <el-option label="DEBUG" value="DEBUG" />
             <el-option label="INFO" value="INFO" />
@@ -63,23 +59,27 @@
         </el-form-item>
       </el-card>
 
-      <!-- 存储 -->
       <el-card shadow="never" class="sec-card">
-        <template #header><span class="sec-title">存储与路径</span></template>
-        <el-form-item label="数据目录">
+        <template #header><span class="sec-title">{{ $t('settings.general.storage') }}</span></template>
+        <el-form-item :label="$t('settings.general.dataDir')">
           <el-input v-model="cfg.data_dir" placeholder="~/.astro-nova" />
-          <p class="form-tip">论文、笔记、知识库存储位置</p>
+          <p class="form-tip">{{ $t('settings.general.dataDirTip') }}</p>
         </el-form-item>
-        <el-form-item label="知识库默认存储">
+        <el-form-item label="笔记输出目录">
+          <el-input v-model="cfg.notes_dir" placeholder="留空则使用默认位置" />
+          <p class="form-tip">
+            当前: <code>{{ currentOutputDir || '未设置' }}</code> · 留空自动使用安装目录旁的 notes/
+          </p>
+        </el-form-item>
+        <el-form-item :label="$t('settings.general.knowledgeStore')">
           <el-input v-model="cfg.knowledge_store" placeholder="default" />
         </el-form-item>
       </el-card>
 
-      <!-- 保存 -->
       <div class="form-actions">
-        <el-button type="primary" @click="saveSettings" :loading="saving">保存设置</el-button>
-        <el-button @click="resetSettings">重置为默认</el-button>
-        <span v-if="saved" class="save-hint"><el-icon color="#67c23a"><SuccessFilled /></el-icon> 已保存</span>
+        <el-button type="primary" @click="saveSettings" :loading="saving">{{ $t('settings.general.save') }}</el-button>
+        <el-button @click="resetSettings">{{ $t('settings.general.reset') }}</el-button>
+        <span v-if="saved" class="save-hint"><el-icon color="#67c23a"><SuccessFilled /></el-icon> {{ $t('settings.general.saved') }}</span>
       </div>
     </el-form>
   </div>
@@ -87,13 +87,17 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
-import { getSettings, updateSettings } from "@/api/client";
+import { useI18n } from "vue-i18n";
+import { getSettings, updateSettings, getNovaForgeOutputDir } from "@/api/client";
 import { ElMessage } from "element-plus";
 import { Loading, SuccessFilled } from "@element-plus/icons-vue";
 
+const { locale } = useI18n();
 const loading = ref(true);
 const saving = ref(false);
 const saved = ref(false);
+
+const currentOutputDir = ref("");
 
 const cfg = reactive<Record<string, any>>({
   language: "zh-CN",
@@ -105,9 +109,22 @@ const cfg = reactive<Record<string, any>>({
   log_level: "INFO",
   data_dir: "~/.astro-nova",
   knowledge_store: "default",
+  notes_dir: "",
 });
 
 const defaults = { ...cfg };
+
+function switchLanguage(val: string) {
+  locale.value = val;
+}
+
+function applyTheme(theme: string) {
+  if (theme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+}
 
 onMounted(async () => {
   try {
@@ -115,26 +132,30 @@ onMounted(async () => {
     Object.assign(cfg, data);
   } catch {
     // 使用默认值
-  } finally {
-    loading.value = false;
   }
+  try {
+    currentOutputDir.value = await getNovaForgeOutputDir();
+  } catch {}
+  loading.value = false;
+  applyTheme(cfg.theme);
+  if (cfg.language === "en") locale.value = "en";
 });
 
 async function saveSettings() {
   saving.value = true;
   saved.value = false;
   try {
-    // 只保存非空字段
+    applyTheme(cfg.theme);
     const payload: Record<string, any> = {};
     for (const [k, v] of Object.entries(cfg)) {
       if (v !== "" && v !== null && v !== undefined) payload[k] = v;
     }
     await updateSettings(payload);
     saved.value = true;
-    ElMessage.success("设置已保存");
+    ElMessage.success(cfg.language === "en" ? "Settings saved" : "设置已保存");
     setTimeout(() => { saved.value = false; }, 2000);
   } catch {
-    ElMessage.error("保存失败");
+    ElMessage.error(cfg.language === "en" ? "Save failed" : "保存失败");
   } finally {
     saving.value = false;
   }
@@ -142,7 +163,7 @@ async function saveSettings() {
 
 function resetSettings() {
   Object.assign(cfg, defaults);
-  ElMessage.info("已重置为默认值（尚未保存）");
+  ElMessage.info(cfg.language === "en" ? "Reset to defaults (not saved yet)" : "已重置为默认值（尚未保存）");
 }
 </script>
 

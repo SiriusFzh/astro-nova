@@ -1,23 +1,20 @@
 """配置管理"""
 import json
 import os
-from pathlib import Path
 
-DATA_DIR = Path(os.path.expanduser("~")) / ".astro-nova"
-CONFIG_PATH = DATA_DIR / "config.json"
-
-
-def ensure_data_dir():
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
+from astro_nova.utils.paths import get_config_path
 
 
 def load_config() -> dict:
-    ensure_data_dir()
-    if CONFIG_PATH.exists():
-        return json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    path = get_config_path()
+    if os.path.exists(path):
+        return json.loads(open(path, "r", encoding="utf-8").read())
     return {}
 
 
 def save_config(config: dict):
-    ensure_data_dir()
-    CONFIG_PATH.write_text(json.dumps(config, indent=2, ensure_ascii=False), encoding="utf-8")
+    path = get_config_path()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    open(path, "w", encoding="utf-8").write(
+        json.dumps(config, indent=2, ensure_ascii=False)
+    )

@@ -1,54 +1,56 @@
 <template>
   <div class="page">
-    <div class="page-header"><h2>科研制图</h2></div>
-    <p class="page-desc">描述数据并选择图表类型，AI 将生成可运行的出版级 matplotlib 代码（PDF 矢量图）。</p>
+    <div class="page-header"><h2>{{ $t('figures.title') }}</h2></div>
+    <p class="page-desc">{{ $t('figures.desc') }}</p>
     <div class="fig-layout">
       <div class="fig-input">
         <el-input
           v-model="prompt"
           type="textarea"
           :rows="6"
-          placeholder="描述数据和图表要求，例如: 我有 3C 273 的光谱数据，波长 4000-7000Å，流量 1e-15 量级，标注 Hα、Hβ、[OIII] 发射线"
+          :placeholder="$t('figures.promptPlaceholder')"
         />
         <div class="fig-opts-row">
           <el-select v-model="plotType" style="width:160px">
-            <el-option label="光谱图" value="spectrum" />
-            <el-option label="光变曲线" value="lightcurve" />
-            <el-option label="SED 能谱分布" value="sed" />
-            <el-option label="等高线图" value="contour" />
-            <el-option label="直方图" value="histogram" />
-            <el-option label="散点图" value="scatter" />
-            <el-option label="多面板组合图" value="multi_panel" />
+            <el-option :label="$t('figures.plotTypes.spectrum')" value="spectrum" />
+            <el-option :label="$t('figures.plotTypes.lightcurve')" value="lightcurve" />
+            <el-option :label="$t('figures.plotTypes.sed')" value="sed" />
+            <el-option :label="$t('figures.plotTypes.contour')" value="contour" />
+            <el-option :label="$t('figures.plotTypes.histogram')" value="histogram" />
+            <el-option :label="$t('figures.plotTypes.scatter')" value="scatter" />
+            <el-option :label="$t('figures.plotTypes.multi_panel')" value="multi_panel" />
           </el-select>
           <el-select v-model="style" style="width:160px">
-            <el-option label="ApJ 风格" value="apj" />
-            <el-option label="MNRAS 风格" value="mnras" />
-            <el-option label="A&A 风格" value="aa" />
+            <el-option :label="$t('figures.styles.apj')" value="apj" />
+            <el-option :label="$t('figures.styles.mnras')" value="mnras" />
+            <el-option :label="$t('figures.styles.aa')" value="aa" />
           </el-select>
-          <el-input v-model="extraReq" placeholder="额外要求（色板、标注等）" clearable style="flex:1" />
-          <el-button type="primary" @click="generateCode" :loading="loading">生成代码</el-button>
+          <el-input v-model="extraReq" :placeholder="$t('figures.extraReqPlaceholder')" clearable style="flex:1" />
+          <el-button type="primary" @click="generateCode" :loading="loading">{{ $t('figures.generate') }}</el-button>
         </div>
       </div>
       <div class="fig-output" v-if="code || error">
         <div class="output-header">
-          <span>生成的 Python 代码</span>
+          <span>{{ $t('figures.generatedCode') }}</span>
           <span class="output-info">
             <el-tag v-if="filePath" size="small" type="success">{{ filePath }}</el-tag>
           </span>
-          <el-button size="small" @click="copyCode" :disabled="!code">复制</el-button>
+          <el-button size="small" @click="copyCode" :disabled="!code">{{ $t('figures.copy') }}</el-button>
         </div>
         <pre class="code-block"><code>{{ code || error }}</code></pre>
       </div>
     </div>
-    <el-empty v-if="!loading && !code && !error" description="输入数据描述并点击生成" />
+    <el-empty v-if="!loading && !code && !error" :description="$t('figures.emptyHint')" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { generateFigureCode } from "@/api/client";
 import { ElMessage } from "element-plus";
 
+const { t } = useI18n();
 const prompt = ref("");
 const plotType = ref("spectrum");
 const style = ref("apj");
@@ -59,7 +61,7 @@ const error = ref("");
 const filePath = ref("");
 
 async function generateCode() {
-  if (!prompt.value.trim()) { ElMessage.warning("请输入数据描述"); return; }
+  if (!prompt.value.trim()) { ElMessage.warning(t('figures.warningInput')); return; }
   loading.value = true;
   code.value = "";
   error.value = "";
@@ -69,13 +71,13 @@ async function generateCode() {
     if (data.error) {
       error.value = data.error;
     } else {
-      code.value = data.code || data.slides || "无返回";
+      code.value = data.code || data.slides || t('figures.noReturn');
       filePath.value = data.file_path || "";
-      ElMessage.success("代码已生成");
+      ElMessage.success(t('figures.generateSuccess'));
     }
   } catch (e: any) {
-    error.value = "请求失败: " + (e?.message || String(e));
-    ElMessage.error("生成失败");
+    error.value = t('figures.requestFailed') + ": " + (e?.message || String(e));
+    ElMessage.error(t('figures.generateFailed'));
   } finally {
     loading.value = false;
   }
@@ -83,7 +85,7 @@ async function generateCode() {
 
 function copyCode() {
   navigator.clipboard.writeText(code.value);
-  ElMessage.success("已复制到剪贴板");
+  ElMessage.success(t('figures.copied'));
 }
 </script>
 

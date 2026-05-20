@@ -1,13 +1,10 @@
 """数据库连接管理"""
-import os
-from pathlib import Path
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 from astro_nova.database.models import Base
+from astro_nova.utils.paths import get_db_path
 
-DATA_DIR = Path(os.path.expanduser("~")) / ".astro-nova"
-DATA_DIR.mkdir(parents=True, exist_ok=True)
-DB_PATH = DATA_DIR / "astronova.db"
+DB_PATH = get_db_path()
 
 engine = create_async_engine(f"sqlite+aiosqlite:///{DB_PATH}", echo=False)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)

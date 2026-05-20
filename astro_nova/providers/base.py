@@ -13,6 +13,7 @@ class LLMMessage:
     content: str
     name: Optional[str] = None
     tool_call_id: Optional[str] = None
+    reasoning_content: Optional[str] = None  # DeepSeek thinking mode
 
 
 @dataclass

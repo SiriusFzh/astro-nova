@@ -1,56 +1,56 @@
 <template>
   <div class="page">
-    <div class="page-header"><h2>PPT 生成</h2></div>
-    <p class="page-desc">从论文或笔记一键生成学术汇报幻灯片（支持 Marp/Pandoc/Reveal.js）。</p>
+    <div class="page-header"><h2>{{ $t('ppt.title') }}</h2></div>
+    <p class="page-desc">{{ $t('ppt.desc') }}</p>
     <div class="ppt-form">
       <el-card shadow="never" class="ppt-card">
-        <template #header>输入来源</template>
+        <template #header>{{ $t('ppt.sourceType') }}</template>
         <el-radio-group v-model="sourceType" style="margin-bottom:12px">
-          <el-radio value="arxiv">arXiv ID</el-radio>
-          <el-radio value="manual">手动输入</el-radio>
+          <el-radio value="arxiv">{{ $t('ppt.arxiv') }}</el-radio>
+          <el-radio value="manual">{{ $t('ppt.manual') }}</el-radio>
         </el-radio-group>
         <div v-if="sourceType === 'arxiv'">
-          <el-input v-model="arxivId" placeholder="输入 arXiv ID，如 2301.00001" clearable style="margin-bottom:8px" />
-          <el-button size="small" @click="fetchAndFill" :loading="fetching">获取论文信息</el-button>
-          <el-input v-if="fetchedTitle" v-model="slideTitle" placeholder="标题" style="margin-top:8px" />
+          <el-input v-model="arxivId" :placeholder="$t('ppt.arxivPlaceholder')" clearable style="margin-bottom:8px" />
+          <el-button size="small" @click="fetchAndFill" :loading="fetching">{{ $t('ppt.fetchTitle') }}</el-button>
+          <el-input v-if="fetchedTitle" v-model="slideTitle" :placeholder="$t('ppt.arxiv')" style="margin-top:8px" />
         </div>
         <el-input
           v-else
           v-model="manualInput"
           type="textarea"
           :rows="8"
-          placeholder="输入论文精读笔记或论文内容（标题、作者、摘要、核心结果等）"
+          :placeholder="$t('ppt.manualPlaceholder')"
         />
       </el-card>
       <el-card shadow="never" class="ppt-card">
-        <template #header>幻灯片设置</template>
+        <template #header>{{ $t('ppt.slideSettings') }}</template>
         <div class="ppt-opts">
           <el-select v-model="slideStyle" style="width:160px">
-            <el-option label="课题汇报（中文详细，10-15页）" value="journal_club" />
-            <el-option label="国际会议（English，8-10页）" value="conference" />
-            <el-option label="答辩/开题（中英混合，15-20页）" value="defense" />
+            <el-option :label="$t('ppt.styles.journal_club')" value="journal_club" />
+            <el-option :label="$t('ppt.styles.conference')" value="conference" />
+            <el-option :label="$t('ppt.styles.defense')" value="defense" />
           </el-select>
           <el-select v-model="outputFormat" style="width:140px">
-            <el-option label="Marp" value="marp" />
-            <el-option label="Pandoc" value="pandoc" />
-            <el-option label="Reveal.js" value="revealjs" />
+            <el-option :label="$t('ppt.formats.marp')" value="marp" />
+            <el-option :label="$t('ppt.formats.pandoc')" value="pandoc" />
+            <el-option :label="$t('ppt.formats.revealjs')" value="revealjs" />
           </el-select>
-          <el-button type="primary" @click="generatePPT" :loading="generating">生成 PPT</el-button>
+          <el-button type="primary" @click="generatePPT" :loading="generating">{{ $t('ppt.generate') }}</el-button>
         </div>
       </el-card>
     </div>
 
-    <el-empty v-if="!generating && !slideContent" description="选择来源并生成幻灯片" />
+    <el-empty v-if="!generating && !slideContent" :description="$t('ppt.emptyHint')" />
 
     <div v-if="slideContent" class="ppt-result">
       <el-card shadow="never">
         <template #header>
           <div class="ppt-result-header">
-            <span>幻灯片预览 ({{ styleName }})</span>
+            <span>{{ $t('ppt.preview') }} ({{ styleName }})</span>
             <div class="ppt-result-actions">
               <el-tag v-if="filePath" size="small" type="success">{{ filePath }}</el-tag>
-              <el-button size="small" @click="copyContent">复制</el-button>
-              <el-button v-if="convertCmd" size="small" type="primary" @click="copyCmd">复制转换命令</el-button>
+              <el-button size="small" @click="copyContent">{{ $t('ppt.copyContent') }}</el-button>
+              <el-button v-if="convertCmd" size="small" type="primary" @click="copyCmd">{{ $t('ppt.copyCmd') }}</el-button>
             </div>
           </div>
         </template>
@@ -62,8 +62,17 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { generatePPT as apiGeneratePPT, fetchPaper } from "@/api/client";
 import { ElMessage } from "element-plus";
+
+const { t } = useI18n();
+
+const styleLabels: Record<string, string> = {
+  journal_club: t('ppt.styles.journal_club'),
+  conference: t('ppt.styles.conference'),
+  defense: t('ppt.styles.defense'),
+};
 
 const sourceType = ref("arxiv");
 const arxivId = ref("");
@@ -88,22 +97,16 @@ async function fetchAndFill() {
       fetchedTitle.value = data.paper.title || "";
       slideTitle.value = fetchedTitle.value;
       if (!manualInput.value) {
-        manualInput.value = `标题: ${data.paper.title}\n作者: ${(data.paper.authors || []).join(", ")}\n摘要: ${data.paper.summary || ""}`;
+        manualInput.value = `${t('writing.title')}: ${data.paper.title}\nAuthors: ${(data.paper.authors || []).join(", ")}\nAbstract: ${data.paper.summary || ""}`;
       }
-      ElMessage.success("已获取论文信息");
+      ElMessage.success(t('ppt.fetchSuccess'));
     }
   } catch {
-    ElMessage.error("获取论文信息失败");
+    ElMessage.error(t('ppt.fetchFailed'));
   } finally {
     fetching.value = false;
   }
 }
-
-const styleLabels: Record<string, string> = {
-  journal_club: "课题汇报",
-  conference: "国际会议",
-  defense: "答辩/开题",
-};
 
 async function generatePPT() {
   let content = manualInput.value;
@@ -112,9 +115,9 @@ async function generatePPT() {
 
   if (sourceType.value === "arxiv") {
     aid = arxivId.value.trim();
-    if (!content && !aid) { ElMessage.warning("请输入 arXiv ID 或内容"); return; }
+    if (!content && !aid) { ElMessage.warning(t('ppt.warningInputArxiv')); return; }
   } else {
-    if (!content.trim()) { ElMessage.warning("请输入论文内容"); return; }
+    if (!content.trim()) { ElMessage.warning(t('ppt.warningInputContent')); return; }
   }
 
   generating.value = true;
@@ -128,13 +131,13 @@ async function generatePPT() {
     if (data.error) {
       ElMessage.error(data.error);
     } else {
-      slideContent.value = data.slides || "（无返回）";
+      slideContent.value = data.slides || t('ppt.noReturn');
       filePath.value = data.file_path || "";
       convertCmd.value = data.convert_command || "";
-      ElMessage.success("PPT 生成完成");
+      ElMessage.success(t('ppt.generateSuccess'));
     }
   } catch (e: any) {
-    ElMessage.error("生成失败: " + (e?.message || String(e)));
+    ElMessage.error(t('ppt.generateFailed') + ": " + (e?.message || String(e)));
   } finally {
     generating.value = false;
   }
@@ -142,12 +145,12 @@ async function generatePPT() {
 
 function copyContent() {
   navigator.clipboard.writeText(slideContent.value);
-  ElMessage.success("已复制到剪贴板");
+  ElMessage.success(t('ppt.copied'));
 }
 
 function copyCmd() {
   navigator.clipboard.writeText(convertCmd.value);
-  ElMessage.success("转换命令已复制");
+  ElMessage.success(t('ppt.cmdCopied'));
 }
 </script>
 

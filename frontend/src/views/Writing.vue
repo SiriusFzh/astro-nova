@@ -1,19 +1,19 @@
 <template>
   <div class="page">
-    <div class="page-header"><h2>论文写作</h2></div>
-    <p class="page-desc">选择目标期刊，AI 辅助按标准格式撰写论文各章节，输出 LaTeX。</p>
+    <div class="page-header"><h2>{{ $t('writing.title') }}</h2></div>
+    <p class="page-desc">{{ $t('writing.desc') }}</p>
     <div class="writing-layout">
       <div class="writing-sidebar">
         <el-card shadow="never">
-          <template #header>目标期刊</template>
+          <template #header>{{ $t('writing.journal') }}</template>
           <el-radio-group v-model="journal" class="journal-list">
-            <el-radio value="apj" class="journal-item">ApJ / AJ / ApJL</el-radio>
-            <el-radio value="mnras" class="journal-item">MNRAS</el-radio>
-            <el-radio value="aa" class="journal-item">A&A</el-radio>
+            <el-radio value="apj" class="journal-item">{{ $t('writing.journals.apj') }}</el-radio>
+            <el-radio value="mnras" class="journal-item">{{ $t('writing.journals.mnras') }}</el-radio>
+            <el-radio value="aa" class="journal-item">{{ $t('writing.journals.aa') }}</el-radio>
           </el-radio-group>
         </el-card>
         <el-card shadow="never" style="margin-top:12px">
-          <template #header>论文章节</template>
+          <template #header>{{ $t('writing.section') }}</template>
           <div
             v-for="sec in sections"
             :key="sec.key"
@@ -24,27 +24,27 @@
             <el-icon v-if="sec.done" color="#67c23a"><Check /></el-icon>
             <el-icon v-else><Document /></el-icon>
             <span>{{ sec.label }}</span>
-            <span v-if="sec.wordCount" class="word-count">{{ sec.wordCount }} 词</span>
+            <span v-if="sec.wordCount" class="word-count">{{ sec.wordCount }} {{ $t('writing.wordCount') }}</span>
           </div>
         </el-card>
-        <el-button style="width:100%;margin-top:12px" @click="exportAll">导出全部 LaTeX</el-button>
+        <el-button style="width:100%;margin-top:12px" @click="exportAll">{{ $t('writing.exportLatex') }}</el-button>
       </div>
       <div class="writing-main">
         <div class="writing-toolbar">
-          <el-input v-model="paperTitle" placeholder="论文标题（可选）" clearable style="flex:1" />
+          <el-input v-model="paperTitle" :placeholder="$t('writing.paperTitlePlaceholder')" clearable style="flex:1" />
           <el-button :icon="ChatDotSquare" type="primary" @click="writeWithAI" :loading="writing">
-            {{ writingSection ? `正在撰写 ${writingSection}...` : 'AI 撰写本段' }}
+            {{ writingSection ? $t('writing.writingSection') + ' ' + writingSection + '...' : $t('writing.aiWrite') }}
           </el-button>
         </div>
         <el-input
           v-model="sectionContent"
           type="textarea"
           :rows="16"
-          placeholder="在此输入上下文信息（已有结果、数据描述、关键数值、相关文献等），然后点击「AI 撰写本段」生成内容..."
+          :placeholder="$t('writing.inputPrompt')"
         />
         <div v-if="currentWordCount > 0" class="writing-footer">
-          <span>本段约 {{ currentWordCount }} 词 | 期刊字数限制: {{ journalLimit }}</span>
-          <el-button size="small" @click="saveSection">保存本段</el-button>
+          <span>{{ $t('writing.saveHint') }} {{ currentWordCount }} {{ $t('writing.wordCount') }} | {{ $t('writing.journalLimit') }}: {{ journalLimit }}</span>
+          <el-button size="small" @click="saveSection">{{ $t('writing.saveSection') }}</el-button>
         </div>
       </div>
     </div>
@@ -53,9 +53,21 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { writeSection } from "@/api/client";
 import { Check, Document, ChatDotSquare } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+
+const { t } = useI18n();
+
+const sectionLabels: Record<string, string> = {
+  abstract: t('writing.sections.abstract'),
+  introduction: t('writing.sections.introduction'),
+  methods: t('writing.sections.methods'),
+  results: t('writing.sections.results'),
+  discussion: t('writing.sections.discussion'),
+  conclusion: t('writing.sections.conclusion'),
+};
 
 const journal = ref("apj");
 const paperTitle = ref("");
@@ -65,18 +77,18 @@ const writing = ref(false);
 const writingSection = ref("");
 
 const sections = ref([
-  { key: "abstract", label: "Abstract (摘要)", done: false, wordCount: 0 },
-  { key: "introduction", label: "Introduction (引言)", done: false, wordCount: 0 },
-  { key: "methods", label: "Methods (方法)", done: false, wordCount: 0 },
-  { key: "results", label: "Results (结果)", done: false, wordCount: 0 },
-  { key: "discussion", label: "Discussion (讨论)", done: false, wordCount: 0 },
-  { key: "conclusion", label: "Conclusion (结论)", done: false, wordCount: 0 },
+  { key: "abstract", label: sectionLabels.abstract, done: false, wordCount: 0 },
+  { key: "introduction", label: sectionLabels.introduction, done: false, wordCount: 0 },
+  { key: "methods", label: sectionLabels.methods, done: false, wordCount: 0 },
+  { key: "results", label: sectionLabels.results, done: false, wordCount: 0 },
+  { key: "discussion", label: sectionLabels.discussion, done: false, wordCount: 0 },
+  { key: "conclusion", label: sectionLabels.conclusion, done: false, wordCount: 0 },
 ]);
 
 const journalLimit = computed(() => ({
-  apj: "摘要 ≤250 词",
-  mnras: "摘要 ≤300 词",
-  aa: "摘要 ≤300 词",
+  apj: t('writing.limits.apj'),
+  mnras: t('writing.limits.mnras'),
+  aa: t('writing.limits.aa'),
 }[journal.value] || ""));
 
 const currentWordCount = computed(() => {
@@ -100,7 +112,7 @@ async function writeWithAI() {
   saveSection();
   const context = sectionContent.value.trim();
   if (!context) {
-    ElMessage.warning("请在编辑区输入上下文信息（结果、数据、要求等）");
+    ElMessage.warning(t('writing.warningNoContext'));
     return;
   }
 
@@ -124,10 +136,10 @@ async function writeWithAI() {
         sec.wordCount = data.word_count || 0;
         sectionContents.value[activeSection.value] = sectionContent.value;
       }
-      ElMessage.success(`${sec?.label || activeSection.value} 撰写完成`);
+      ElMessage.success(`${sec?.label || activeSection.value} ${t('writing.writeSuccess')}`);
     }
   } catch (e: any) {
-    ElMessage.error("写作失败: " + (e?.message || String(e)));
+    ElMessage.error(t('writing.writeFailed') + ": " + (e?.message || String(e)));
   } finally {
     writing.value = false;
     writingSection.value = "";
@@ -145,7 +157,7 @@ function exportAll() {
     }
   }
   if (parts.length === 0) {
-    ElMessage.warning("还没有写好的章节");
+    ElMessage.warning(t('writing.warningNoSections'));
     return;
   }
   const full = `% ${paperTitle.value || "Untitled"}\n% Journal: ${journal.value}\n\\documentclass{${journal.value === 'apj' ? 'aastex701' : journal.value === 'mnras' ? 'mnras' : 'aa'}}\n\\begin{document}\n\n${parts.join('\n')}\n\\end{document}\n`;
@@ -156,7 +168,7 @@ function exportAll() {
   a.download = `paper_${journal.value}.tex`;
   a.click();
   URL.revokeObjectURL(url);
-  ElMessage.success("已导出 .tex 文件");
+  ElMessage.success(t('writing.exported'));
 }
 </script>
 

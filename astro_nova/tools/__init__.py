@@ -36,6 +36,8 @@ def register_all_tools():
         "astro_nova.tools.figure_generator",
         "astro_nova.tools.writing_assistant",
         "astro_nova.tools.ppt_generator",
+        "astro_nova.tools.arxiv_fetch",
+        "astro_nova.tools.daily_digest",
     ]
 
     for mod_name in modules:

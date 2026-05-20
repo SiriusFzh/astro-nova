@@ -14,7 +14,9 @@ from astro_nova.providers.manager import manager as provider_manager
 from astro_nova.tools.registry import Tool, registry
 from astro_nova.utils.logger import logger
 
-PAPER_DIR = os.path.join(os.path.expanduser("~"), ".astro-nova", "writing")
+from astro_nova.utils.paths import get_data_dir as _get_data_dir
+
+PAPER_DIR = _get_data_dir("writing")
 
 JOURNAL_INFO = {
     "apj": {
