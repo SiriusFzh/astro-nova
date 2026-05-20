@@ -20,9 +20,6 @@ build/pyinstaller/
 src-tauri/target/
 src-tauri/gen/
 
-# WebView2 loader DLL (third-party binary)
-src-tauri/resources/
-
 # Tauri sidecar binaries (built by scripts/build_backend.sh)
 src-tauri/binaries/
 

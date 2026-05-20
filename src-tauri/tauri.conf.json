@@ -37,9 +37,7 @@
       "icons/icon.ico"
     ],
     "externalBin": ["binaries/backend"],
-    "resources": {
-      "resources/WebView2Loader.dll": "."
-    },
+    "resources": {},
     "windows": {
       "nsis": {
         "installerIcon": "icons/installer.ico"
