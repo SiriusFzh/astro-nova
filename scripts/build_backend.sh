@@ -13,9 +13,10 @@ fi
 echo "[build_backend] Using spec: $SPEC"
 pyinstaller "$SPEC" --noconfirm 2>&1 | tail -1
 
-# Replace build/backend with freshly built output
+# Replace build/backend with freshly built output (onefile mode → .exe directly in dist/)
 rm -rf build/backend
-cp -r dist/astro_nova_backend build/backend
+mkdir -p build/backend
+cp "dist/astro_nova_backend.exe" "build/backend/astro_nova_backend.exe"
 
 # Copy to Tauri sidecar location (Windows)
 if [ "$(uname)" != "Darwin" ]; then

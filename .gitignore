@@ -23,6 +23,9 @@ src-tauri/gen/
 # WebView2 loader DLL (third-party binary)
 src-tauri/resources/
 
+# Tauri sidecar binaries (built by scripts/build_backend.sh)
+src-tauri/binaries/
+
 # Old Electron artifacts (kept for reference until migration is complete)
 electron/
 
