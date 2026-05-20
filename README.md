@@ -5,149 +5,75 @@
 <h1 align="center">AstroNova</h1>
 
 <p align="center">
-  <strong>AI 驱动的天文学全领域科研助手桌面客户端</strong>
+  <strong>AI Agent 驱动的天文学科研助手</strong>
   <br>
-  从文献检索到论文发表，覆盖天文学科研全流程的一站式 AI 工具集。
+  像 Claude Code 帮程序员写代码一样，AstroNova 帮天文人搞科研。
+  <br>
+  从文献检索到论文发表，一个 Agent 搞定。
 </p>
 
 ---
 
-## 功能总览
+## 这是什么？
 
-```
-                 ┌─ 文献检索 ── 论文精读 ──┐
-                 │                         │
-  用户提问 ──→   ├─ 科研制图 ── 笔记生成 ──├─→ 论文/PPT 输出
-                 │                         │
-                 └─ 知识库 RAG ── 写作辅助 ─┘
-```
+AstroNova 是一个 **AI Agent（智能体）** 桌面应用。它的设计思路和 Claude Code、OpenAI Codex 一样——让大语言模型作为"大脑"，各种科研工具作为"手"，通过自然语言指挥 AI 完成科研任务。
 
-### 📚 文献检索与论文精读
+**核心模式：LLM（大脑）+ Tools（手）= Agent**
 
-| 功能 | 说明 |
-|------|------|
-| **ArXiv 搜索** | 按关键词/作者/分类搜索天文学论文，支持 astro-ph.GA、HE、CO、SR 等子领域过滤 |
-| **论文全文获取** | 自动从 ArXiv 获取 PDF 并提取文本 |
-| **结构化精读** | 输入 arXiv ID，AI 按 7 维度框架分析：研究背景、方法、结果、创新点、局限性、未来工作、个人思考 |
-| **批量处理** | 一次分析多篇相关论文，生成对比综述 |
+Claude Code 给 AI 提供了读文件、写代码、执行命令等工具来帮程序员写程序。AstroNova 给 AI 提供了搜论文、读论文、做笔记、画图、写论文等工具来帮天文人做科研。
 
-### 📝 NovaForge 笔记生成
+## 功能
 
-| 功能 | 说明 |
-|------|------|
-| **LaTeX 笔记** | 自动生成含完整导言区的科研笔记 .tex 文件 |
-| **Markdown 笔记** | 同时输出 Markdown 版本，方便分享 |
-| **自定义章节** | 按需选择背景/方法/结果/讨论等章节结构 |
-| **知识沉淀** | 将精读结果转化为可复用的结构化知识 |
+### 对话
+像用 ChatGPT 一样和 AI 聊天，但 AI 懂天文学，还能动手干活——你说"帮我查一下中子星合并的论文"，它就自动去 arXiv 搜索。
 
-### 📈 科研制图
+### 文献检索
+搜索 arXiv 上的天文学论文，支持按子领域过滤（星系物理、高能天体物理、宇宙学等）。
 
-| 功能 | 说明 |
-|------|------|
-| **7 种图表类型** | 光谱图、光变曲线、SED 能谱分布、彩色图谱、等值线图、统计图、多面板图 |
-| **3 种期刊风格** | ApJ (AASTeX)、MNRAS、A&A 标准配色与排版 |
-| **AI 代码生成** | 描述你的数据，AI 生成可直接运行的 matplotlib 代码 |
-| **矢量输出** | PDF 矢量格式，可直接用于论文投稿 |
+### 论文精读
+输入 arXiv ID，AI 自动下载论文全文，按 7 个维度分析：背景、方法、结果、创新点、局限性、个人思考。
 
-### ✍️ 论文写作
+### 笔记生成 (NovaForge)
+精读结果一键生成结构化笔记，输出 LaTeX 和 Markdown 格式，可编译为 PDF。支持科研笔记、章节笔记、考研等多种模板。
 
-| 功能 | 说明 |
-|------|------|
-| **6 种章节模板** | 摘要、引言、方法、结果、讨论、结论 |
-| **3 大期刊标准** | ApJ / MNRAS / A&A 写作规范与风格 |
-| **上下文感知** | 基于已有笔记和精读结果生成，保持逻辑连贯 |
-| **LaTeX 输出** | 直接生成符合期刊要求的 .tex 代码 |
+### 科研制图
+描述你的数据和想要的图，AI 生成可直接运行的 matplotlib 绘图代码，输出 PDF 矢量图。
 
-### 🎬 PPT 生成
+### 论文写作
+按 ApJ、MNRAS、A&A 期刊格式撰写论文章节（摘要、引言、方法、结果、讨论、结论）。
 
-| 功能 | 说明 |
-|------|------|
-| **3 种汇报风格** | 课题汇报 (中文详细)、国际会议 (英文简洁)、答辩开题 (结构完整) |
-| **3 种输出格式** | Marp Markdown、Pandoc Markdown、Reveal.js HTML |
-| **自动提取内容** | 从论文精读结果自动填充摘要/方法/结果/讨论各页 |
-| **一键转换** | Marp 格式可直接用 VS Code 预览并导出 PDF |
+### PPT 生成
+从论文精读结果生成学术汇报幻灯片，支持课题汇报、国际会议、答辩三种风格。
 
-### 🧠 知识库 RAG
+### 每日论文速报 (Digest)
+自动爬取 arXiv 天文学论文，去重后用 AI 生成中文摘要，每天一份论文日报。
 
-| 功能 | 说明 |
-|------|------|
-| **内置知识** | 天文学基础(天体测量/力学/恒星物理)、宇宙学、电磁学、电动力学、观测方法等 11 个模块 |
-| **BM25 检索** | 经典全文检索算法，无需 GPU |
-| **混合检索** | 支持多知识库 + 来源过滤 |
-| **自动扩展** | 可通过插件或手动导入更多文档 |
+### 知识库
+内置天文学基础知识的全文检索（BM25 算法），离线可用。
 
-### 🔌 插件与技能系统
+### 插件与技能
+插件：写 Python 脚本注册新工具，热加载无需重启。技能：SKILL.md 文件定义 AI 行为，触发词激活。
 
-| 功能 | 说明 |
-|------|------|
-| **插件热加载** | 动态加载/卸载 Python 插件，无需重启 |
-| **工具注册** | 插件通过 `@register_tool` 注册为 LLM 可调用的工具 |
-| **Skill 注入** | 上传 SKILL.md 自定义 AI 行为与专业知识 |
-| **多模型路由** | 不同工具可指定不同 LLM 执行，优化成本与效果 |
+## 界面
 
----
+左边侧边栏切换功能，右边主区域操作。自定义暗色标题栏，支持深色模式，中英文界面。
 
-## 支持的大模型
-
-支持同时配置多个 Provider，每个 Provider 可**自行指定**负责的任务类型（对话/搜索/写作/制图/全部），系统按配置路由：
-
-| 服务商 | 推荐模型 | 说明 |
-|--------|---------|------|
-| **OpenAI** | GPT-4o、GPT-4o-mini | 标准兼容接口 |
-| **Anthropic Claude** | Sonnet 4、Haiku 4 | 直连 Anthropic API |
-| **DeepSeek** | V4、R1 | OpenAI 兼容接口 |
-| **Ollama** | 本地开源模型 | 离线本地运行 |
-| **兼容 API** | SiliconFlow、vLLM 等 | 任意 OpenAI 兼容接口 |
-
-**配置示例：**
-```
-Provider A: GPT-4o   → 负责 文献搜索 + 论文精读
-Provider B: Sonnet   → 负责 笔记生成 + 论文写作
-Provider C: DeepSeek → 负责 制图代码生成 + 数据分析
-Provider D: Ollama   → 负责 本地简单问答
-```
-在 设置 → 模型配置 中添加和分配任务。
-
----
-
-## 使用流程
-
-### 第一次使用
-
-```
-1. 下载安装包 ──→ 2. 双击安装 ──→ 3. 打开 AstroNova ──→ 4. 设置 → 模型配置 添加 API Key
-```
-
-### 典型科研工作流
-
-```
-场景：研究"中子星合并"课题
-
-① 对话页 → 搜索 "neutron star mergers gravitational waves"
-② 搜索结果中点击感兴趣论文 → 自动精读 (7 维度分析)
-③ 精读结果 → 一键生成 NovaForge LaTeX 笔记
-④ 从笔记 → 生成科研制图代码 (光谱/光变曲线)
-⑤ 论文写作 → 基于笔记和图表撰写引言/方法/结果
-⑥ 导出全部 → 生成学术汇报 PPT
-```
-
----
-
-## 安装
-
-### 方式一：下载安装包（推荐）
-
-从 [GitHub Releases](https://github.com/SiriusFzh/astro-nova/releases) 下载对应系统的安装包：
-
-- **Windows**: `AstroNova_1.0.0_x64-setup.exe` — 双击安装，桌面上会出现快捷方式
-- **macOS (Intel / Apple Silicon)**: `AstroNova_1.0.0_x64.dmg` — 打开 DMG 将 AstroNova 拖入 Applications
-
-**无需安装 Python**（内置独立后端）
-
-### 方式二：从源码运行
+## 快速开始
 
 ```bash
-# 克隆
+# 1. 下载安装包
+# 从 Releases 下载 AstroNova_x.x.x_x64-setup.exe，双击安装
+
+# 2. 打开软件，去设置页添加 AI 模型
+# 支持 OpenAI、Anthropic Claude、DeepSeek 等
+
+# 3. 开始使用
+# 搜论文 → 精读 → 生成笔记 → 写论文 → 做PPT
+```
+
+### 从源码运行
+
+```bash
 git clone https://github.com/SiriusFzh/astro-nova.git
 cd astro-nova
 
@@ -157,103 +83,56 @@ pip install -r requirements.txt
 # 前端依赖
 cd frontend && npm install && cd ..
 
-# 启动开发模式（后端 + 前端 + Tauri 桌面窗口）
+# 启动开发模式
 npm install
 npm run tauri:dev
 ```
 
-支持 **Windows 10/11** 和 **macOS 13+** 两种开发环境。
+### 构建安装包
 
----
+```bash
+npm run build
+# 产物在 src-tauri/target/release/bundle/nsis/
+```
 
 ## 技术栈
 
 | 层 | 技术 |
 |----|------|
-| **后端框架** | Python 3.14 / FastAPI / Uvicorn |
-| **数据库** | SQLite + SQLAlchemy (async) |
-| **LLM 接入** | OpenAI SDK + Anthropic SDK + 统一 Provider 抽象层 |
-| **前端** | Vue 3 (Composition API) + Element Plus + Vite |
-| **桌面** | Tauri 2 + WebView2 (原生 Windows 窗口) |
-| **知识库** | BM25 全文检索 (自研) |
-| **打包** | PyInstaller (后端独立 EXE) |
-
----
+| 桌面框架 | Tauri 2 (Rust) |
+| 后端 | Python / FastAPI |
+| 前端 | Vue 3 + Element Plus |
+| 数据库 | SQLite |
+| AI 接入 | OpenAI / Anthropic / DeepSeek |
+| 打包 | PyInstaller (后端) + Tauri (桌面) |
 
 ## 项目结构
 
 ```
 astro-nova/
-├── astro_nova/               # Python 后端
-│   ├── main.py               # FastAPI 应用入口
-│   ├── providers/             # LLM 供应商抽象层
-│   │   ├── base.py            # BaseProvider 抽象类
-│   │   ├── openai.py          # OpenAI 兼容 API
-│   │   ├── anthropic.py       # Claude API
-│   │   ├── deepseek.py        # DeepSeek API
-│   │   └── ollama.py          # Ollama 本地模型
-│   ├── tools/                 # 科研工具
-│   │   ├── arxiv_search.py    # ArXiv 论文搜索
-│   │   ├── arxiv_download.py  # PDF 全文下载
-│   │   ├── paper_reader.py    # 论文精读
-│   │   ├── note_generator.py  # NovaForge 笔记
-│   │   ├── figure_generator.py# 科研制图
-│   │   ├── writing_assistant.py# 论文写作
-│   │   └── ppt_generator.py   # PPT 生成
-│   ├── plugins/               # 插件系统
-│   ├── skills/                # Skill 系统
-│   ├── knowledge/             # 知识库 RAG
-│   ├── api/                   # REST API 路由
-│   └── database/              # 数据持久化
-├── frontend/                  # Vue 3 前端
-│   └── src/views/
-│       ├── Chat.vue           # AI 对话
-│       ├── Search.vue         # 文献搜索
-│       ├── Papers.vue         # 论文库
-│       ├── Notes.vue          # 笔记管理
-│       ├── Figures.vue        # 科研制图
-│       ├── Writing.vue        # 论文写作
-│       ├── PPT.vue            # PPT 生成
-│       └── settings/          # 设置页面
-├── src-tauri/                 # Tauri 桌面端 (Rust)
-│   ├── src/lib.rs             # 主逻辑：后端进程管理
-│   ├── src/main.rs            # Windows 入口
-│   ├── tauri.conf.json        # 窗口/打包/安全配置
-│   ├── Cargo.toml             # Rust 依赖
-│   ├── icons/                 # 应用图标
-│   └── binaries/              # 后端 sidecar 二进制
-├── skills/                    # 预置 SKILL.md
-│   ├── astro-search/
-│   ├── astro-reader/
-│   ├── astro-figure/
-│   ├── astro-writing/
-│   ├── astro-ppt/
-│   ├── astro-digest/
-│   └── novaforge/
-├── references/                # LaTeX / matplotlib 资源
-├── build/                     # 打包配置
-└── scripts/                   # 独立 Python 脚本
+├── astro_nova/              # Python 后端
+│   ├── main.py              # FastAPI 入口
+│   ├── providers/           # LLM 供应商（OpenAI/Anthropic/DeepSeek）
+│   ├── tools/               # 科研工具（搜索/精读/笔记/制图/写作/PPT/Digest）
+│   ├── novaforge/           # 笔记模板引擎
+│   ├── plugins/             # 插件系统
+│   ├── skills/              # 技能系统
+│   ├── knowledge/           # 知识库 RAG
+│   ├── database/            # 数据库
+│   └── api/                 # API 路由
+├── frontend/                # Vue 3 前端
+│   └── src/views/           # 12 个功能页面
+├── src-tauri/               # Tauri 桌面壳 (Rust)
+│   └── src/lib.rs           # 后端进程管理 + 系统托盘
+├── skills/                  # 预置 SKILL.md
+├── references/              # LaTeX / matplotlib 资源
+└── scripts/                 # 构建脚本
 ```
 
----
+## 关于 AI Agent
 
-## 领域覆盖
-
-AstroNova 面向天文学与天体物理全领域：
-
-| 领域 | ArXiv 分类 | 典型课题 |
-|------|-----------|---------|
-| 星系天体物理 | astro-ph.GA | 星系演化、恒星形成、AGN、银河系结构 |
-| 高能天体物理 | astro-ph.HE | 中子星、黑洞、伽马射线暴、超新星 |
-| 宇宙学 | astro-ph.CO | 暗物质、暗能量、CMB、大尺度结构 |
-| 太阳与恒星物理 | astro-ph.SR | 恒星演化、星震学、太阳物理 |
-| 行星科学 | astro-ph.EP | 系外行星、行星形成、宜居性 |
-| 仪器与方法 | astro-ph.IM | 数据处理、望远镜技术、统计方法 |
-| 引力波 | gr-qc | 引力波天文学、多信使天文 |
-| 空间物理 | physics.space-ph | 太阳风、磁层、空间等离子体 |
-
----
+AstroNova 借鉴了 Claude Code、Codex 等 AI 编程助手的 Agent 架构。核心机制是 ToolRegistry（工具注册中心）——所有工具统一注册，AI 在对话中自主决定调用哪些工具、按什么顺序调用，实现端到端的科研工作流。
 
 ## 许可证
 
-MIT License © 2026 一叶知秋 (SiriusFzh)
+MIT
