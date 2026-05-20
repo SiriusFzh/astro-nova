@@ -15,3 +15,22 @@ astro_nova/knowledge/data/
 *.log
 build/backend/
 build/pyinstaller/
+
+# Tauri build artifacts
+src-tauri/target/
+src-tauri/gen/
+
+# WebView2 loader DLL (third-party binary)
+src-tauri/resources/
+
+# Old Electron artifacts (kept for reference until migration is complete)
+electron/
+
+# Runtime data
+data/
+
+# Setup installers
+*.exe
+
+# Generated docs
+scripts/gen_report.py
