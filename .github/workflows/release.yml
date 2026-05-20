@@ -11,10 +11,7 @@ permissions:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -34,54 +31,23 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm install
 
+      # Rust
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+
       # Build
       - run: npm run build
         env:
-          ELECTRON_BUILDER_BINARIES_MIRROR: ${{ secrets.ELECTRON_MIRROR || '' }}
-
-      # macOS code sign + notarize (requires Apple Developer credentials)
-      - name: Import code-signing certificate
-        if: runner.os == 'macOS' && env.APPLE_ID != ''
-        uses: apple-actions/import-codesign-certs@v3
-        with:
-          p12-file-base64: ${{ secrets.APPLE_CERT_P12 }}
-          p12-password: ${{ secrets.APPLE_CERT_PASSWORD }}
-
-      - name: Code sign
-        if: runner.os == 'macOS' && env.APPLE_ID != ''
-        run: |
-          codesign --force --options runtime --deep \
-            --sign "$APPLE_DEV_IDENTITY" \
-            dist/*.dmg dist/*.zip
-        env:
-          APPLE_DEV_IDENTITY: ${{ secrets.APPLE_DEV_IDENTITY || 'Developer ID Application' }}
-
-      - name: Notarize
-        if: runner.os == 'macOS' && env.APPLE_ID != ''
-        run: |
-          for f in dist/*.dmg dist/*.zip; do
-            xcrun notarytool submit "$f" \
-              --apple-id "$APPLE_ID" \
-              --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-              --team-id "$APPLE_TEAM_ID" \
-              --wait
-          done
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Upload artifacts
       - uses: actions/upload-artifact@v4
         with:
-          name: astro-nova-${{ runner.os }}
+          name: astro-nova-windows
           path: |
-            dist/*.exe
-            dist/*.exe.blockmap
-            dist/*.dmg
-            dist/*.zip
-            dist/latest.yml
-            dist/latest-mac.yml
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
 
   release:
     needs: build
@@ -94,7 +60,7 @@ jobs:
       - name: Collect artifacts
         run: |
           mkdir artifacts
-          find . -type f \( -name "*.exe" -o -name "*.dmg" -o -name "*.zip" -o -name "*.blockmap" -o -name "latest*.yml" \) -exec cp {} artifacts/ \;
+          find . -type f \( -name "*.exe" -o -name "*.msi" \) -exec cp {} artifacts/ \;
           ls -la artifacts/
 
       - uses: softprops/action-gh-release@v2
